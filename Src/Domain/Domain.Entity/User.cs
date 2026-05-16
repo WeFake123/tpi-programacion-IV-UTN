@@ -11,8 +11,6 @@ namespace Domain.Entity
         public string Email { get; set; } = string.Empty;
         public int Dni { get; set; }
 
-        public string UserType { get; set; } = string.Empty;
-
         public bool IsActive { get; set; }
 
         public string Password { get; set; } = string.Empty;

@@ -1,8 +1,9 @@
-﻿using Application.Dtos.Responses;
-using Application.Dtos.Requests;
-
+﻿using Application.Dtos.Requests;
+using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
+using Infraestructure.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controller
@@ -13,16 +14,18 @@ namespace Presentation.Controller
     public abstract class UsersController<T> : ControllerBase where T : User
     {
         protected readonly IUserService _service;
+        protected readonly IAuthService _authService;
 
-        public UsersController(IUserService service)
+        public UsersController(IUserService service, IAuthService authService)
         {
             _service = service;
+            _authService = authService;
         }
-
-        [HttpPost("signin")]
+        [AllowAnonymous]
+        [HttpPost("singin")]
         public async Task<ActionResult<SingInResponse>> SingIn([FromBody] SingInRequest request)
         {
-            var response = await _service.SingIn(request);
+            var response = await _authService.SingIn(request);
 
             if (response == null)
                 return Unauthorized("Credenciales incorrectas.");
@@ -32,7 +35,7 @@ namespace Presentation.Controller
 
 
 
-
+        [AllowAnonymous]
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<T>>> Get()
         {
@@ -40,7 +43,7 @@ namespace Presentation.Controller
             // Filtramos para devolver solo el tipo específico (Client, Admin, etc.)
             return Ok(users.OfType<T>());
         }
-
+        [Authorize]
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<T>> GetById(Guid id)
         {
@@ -49,7 +52,7 @@ namespace Presentation.Controller
 
             return Ok(typedUser);
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public virtual async Task<ActionResult<T>> Post(T user)
         {
@@ -62,7 +65,7 @@ namespace Presentation.Controller
             var created = await _service.Create(user);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, (T)created);
         }
-
+        [Authorize]
         [HttpPatch("{id}")]
         public virtual async Task<IActionResult> Patch(Guid id, T user)
         {
@@ -71,7 +74,7 @@ namespace Presentation.Controller
 
             return NoContent();
         }
-
+        [Authorize]
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id)
         {

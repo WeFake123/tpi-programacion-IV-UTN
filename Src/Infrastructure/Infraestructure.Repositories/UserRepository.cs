@@ -49,7 +49,7 @@ public class UserRepository : IUserRepository
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
     }
-    public async Task<SingInResponse> SingIn(SingInRequest userData)
+    public async Task<SingInResponse?> SingIn(SingInRequest userData)
     {
         var user = await GetByEmail(userData.Email);
         if (user == null) return null;

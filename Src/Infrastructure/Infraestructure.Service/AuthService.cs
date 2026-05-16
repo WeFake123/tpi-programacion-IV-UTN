@@ -1,19 +1,18 @@
 ﻿using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Trabajop4.Infrastructure;
 
-namespace Infrastructure.Infraestructure.Service
+namespace Infraestructure.Service
 {
     public class AuthService : IAuthService
-    {   
+    {
 
 
         private readonly ApplicationDbContext _context;
@@ -28,26 +27,33 @@ namespace Infrastructure.Infraestructure.Service
         }
 
 
-        public AuthResponse? SignIn(SingInRequest request)
+        public async Task<AuthResponse?> SingIn(SingInRequest request)
         {
+            var cliente = await _context.Users
+                .FirstOrDefaultAsync(c => c.Email == request.Email);
+            Console.WriteLine(cliente);
 
+            if (cliente == null)
+                return null;
 
-            var cliente = _context.Users.FirstOrDefault(c => c.Email == request.Email);
-            if (cliente != null)
-            {
-                if (_hasher.Verify(cliente.Password, request.Password))
-                    return null;
-            }
-            else return null;
+            if (!_hasher.Verify(cliente.Password, request.Password))
+                return null;
 
             return new AuthResponse
             {
-                Token = GenerarToken(cliente.Id, cliente.Email, cliente.UserType),
-                Rol = cliente.UserType,
+                Token = GenerarToken(
+                    cliente.Id,
+                    cliente.Email,
+                    cliente.GetType().Name),
+
+                Rol = cliente.GetType().Name,
                 Id = cliente.Id,
                 Email = cliente.Email
             };
         }
+
+
+
         private string GenerarToken(Guid userId, string email, string rol)
         {
             string key = _configuration["Jwt:Key"]!;

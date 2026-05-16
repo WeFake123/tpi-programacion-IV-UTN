@@ -8,9 +8,7 @@ namespace Application.Interfaces
 {
     public interface IAuthService
     {
-        AuthResponse? SingUp(SingUpRequest request);
 
-        AuthResponse? SingIn(SingInRequest request);
-
+        Task<AuthResponse?> SingIn(SingInRequest request);
     }
 }
