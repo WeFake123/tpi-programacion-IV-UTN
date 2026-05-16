@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Application.Dtos.Application.Dtos.Responses
+namespace Application.Dtos.Responses
 {
     public class SingInResponse
     {

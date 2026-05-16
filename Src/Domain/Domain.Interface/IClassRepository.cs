@@ -1,14 +1,19 @@
 ﻿using Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Interface
 {
     public interface IClassRepository
     {
+        Task<IEnumerable<Class>> GetAll();
 
-        List<Class> GetAll();
+        Task<Class?> GetById(Guid id);
 
+        Task Add(Class gymClass);
+
+        Task Update(Class gymClass);
+
+        Task Delete(Class gymClass);
+
+        Task Save();
     }
 }

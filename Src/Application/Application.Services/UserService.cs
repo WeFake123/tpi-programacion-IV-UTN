@@ -2,7 +2,7 @@
 using Domain.Entity;
 using Domain.Interface;
 using Application.Dtos.Requests;
-using Application.Application.Dtos.Application.Dtos.Responses;
+using Application.Dtos.Responses;
 
 public class UserService : IUserService
 {
@@ -19,16 +19,6 @@ public class UserService : IUserService
 
 
 
-
-    public async Task<SingInResponse?> SingIn(SingInRequest userData)
-    {
-        var user =  _repo.GetByEmail(userData.Email).Result;
-        if (user == null) return null;
-        var isValid = _hasher.Verify(user.Password, userData.Password);
-        if (!isValid) return null;
-        return new SingInResponse(user.Id, user.Email);
-
-    }
     
     public async Task<User?> GetByEmail(string email)
     {

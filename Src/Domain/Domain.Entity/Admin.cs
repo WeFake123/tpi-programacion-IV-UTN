@@ -6,5 +6,6 @@ namespace Domain.Entity
 {
     public class Admin: User
     {
+        public string Rol { get; set; } = "Admin";
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Application.Dtos.Application.Dtos.Responses;
+﻿using Application.Dtos.Responses;
 using Application.Dtos.Requests;
 
 using Application.Interfaces;
@@ -20,9 +20,9 @@ namespace Presentation.Controller
         }
 
         [HttpPost("signin")]
-        public ActionResult<SingInResponse> SingIn([FromBody] SingInRequest request)
+        public async Task<ActionResult<SingInResponse>> SingIn([FromBody] SingInRequest request)
         {
-            var response = _service.SingIn(request);
+            var response = await _service.SingIn(request);
 
             if (response == null)
                 return Unauthorized("Credenciales incorrectas.");

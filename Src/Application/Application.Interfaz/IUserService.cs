@@ -1,4 +1,4 @@
-﻿using Application.Application.Dtos.Application.Dtos.Responses;
+﻿using Application.Dtos.Responses;
 using Application.Dtos.Requests;
 using Domain.Entity;
 using System;
@@ -11,7 +11,6 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<User>> GetAll();
         Task<User?> GetById(Guid id);
-        Task<SingInResponse?> SingIn(SingInRequest userData);
         Task<User?> GetByEmail(string email);
         Task<User> Create(User user);
         Task<bool> Update(Guid id, User user);
