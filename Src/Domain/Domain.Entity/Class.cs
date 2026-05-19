@@ -13,7 +13,7 @@ namespace Domain.Entity
         public string Name { get; set; } = string.Empty;
 
         public int Max_Users { get; set; }
-        public List<Schedule> schedules { get; set; } = new();
+        public List<Schedule> Schedules { get; set; } = new();
 
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Domain.Entity
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Entity
 {
     public class Schedule
     {
@@ -9,7 +11,7 @@
         public TimeOnly StartTime { get; set; }
 
         public TimeOnly EndTime { get; set; }
-
+        [ForeignKey("Class")]
         public Guid Id_Class { get; set; }
 
         public bool IsActive { get; set; } = true;

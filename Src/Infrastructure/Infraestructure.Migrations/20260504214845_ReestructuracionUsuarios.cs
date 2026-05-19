@@ -62,25 +62,33 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+
+                    DayOfWeek = table.Column<int>(type: "int", nullable: false),
+
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Id_Class = table.Column<int>(type: "int", nullable: false),
-                    ClassId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+
+                    Id_Class = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
+
                     table.ForeignKey(
-                        name: "FK_Schedules_Classes_ClassId",
-                        column: x => x.ClassId,
+                        name: "FK_Schedules_Classes_Id_Class",
+                        column: x => x.Id_Class,
                         principalTable: "Classes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_ClassId",
+                name: "IX_Schedules_Id_Class",
                 table: "Schedules",
-                column: "ClassId");
+                column: "Id_Class");
         }
 
         /// <inheritdoc />
