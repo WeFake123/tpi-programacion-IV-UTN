@@ -1,4 +1,5 @@
-﻿using Application.Dtos.Requests;
+﻿using Application.Dtos.Request;
+using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
@@ -21,6 +22,8 @@ namespace Presentation.Controller
             _service = service;
             _authService = authService;
         }
+
+
         [AllowAnonymous]
         [HttpPost("singin")]
         public async Task<ActionResult<SingInResponse>> SingIn([FromBody] SingInRequest request)
@@ -33,6 +36,17 @@ namespace Presentation.Controller
             return Ok(response);
         }
 
+        [AllowAnonymous]
+        [HttpPost("signup")]
+        public async Task<ActionResult<SingUpResponse>> SingUp([FromBody] SingUpRequest request)
+        {
+            var response = await _authService.SingUp(request);
+
+            if (response == null)
+                return Unauthorized("Credenciales incorrectas.");
+
+            return Ok(response);
+        }
 
 
         [AllowAnonymous]
@@ -43,6 +57,30 @@ namespace Presentation.Controller
             // Filtramos para devolver solo el tipo específico (Client, Admin, etc.)
             return Ok(users.OfType<T>());
         }
+
+
+        [Authorize]
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
+        {
+            var result = await _service.UpdateUser(request);
+
+            if (result == null)
+                return BadRequest();
+
+            return Ok(result);
+        }
+        [Authorize]
+        [HttpGet("claims")]
+        public IActionResult Claims()
+        {
+            return Ok(User.Claims.Select(c => new
+            {
+                c.Type,
+                c.Value
+            }));
+        }
+
         [Authorize]
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<T>> GetById(Guid id)
@@ -52,6 +90,7 @@ namespace Presentation.Controller
 
             return Ok(typedUser);
         }
+
         [AllowAnonymous]
         [HttpPost]
         public virtual async Task<ActionResult<T>> Post(T user)

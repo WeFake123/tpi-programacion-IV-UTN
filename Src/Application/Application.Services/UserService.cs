@@ -3,23 +3,38 @@ using Domain.Entity;
 using Domain.Interface;
 using Application.Dtos.Requests;
 using Application.Dtos.Responses;
+using System.ComponentModel.DataAnnotations;
+using Application.Dtos.Request;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _repo;
-
     private readonly IPasswordHasherService _hasher;
+    private readonly IUserContext _userContext;
 
-    public UserService(IUserRepository repo, IPasswordHasherService hasher)
+    public UserService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext)
     {
         _repo = repo;
         _hasher = hasher;
+        _userContext = userContext;
     }
 
-
-
-
     
+    public async Task<User?> UpdateUser(UpdateUserRequest request)
+    {
+        var user = await _repo.GetById(_userContext.UserId);
+
+        if (user == null) return null;
+
+
+        user.Name = request.Name ?? user.Name;
+        user.Email = request.Email ?? user.Email;
+        user.Password = request.Password != null ? _hasher.Hash(request.Password) : user.Password;
+        await _repo.Update(user);
+        await _repo.Save();
+        return user;
+    }
+
     public async Task<User?> GetByEmail(string email)
     {
         var user = await _repo.GetAll();

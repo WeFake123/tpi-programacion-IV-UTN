@@ -1,12 +1,14 @@
 ﻿using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
+using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using Trabajop4.Infrastructure;
 
 namespace Infraestructure.Service
@@ -19,6 +21,7 @@ namespace Infraestructure.Service
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasherService _hasher;
 
+
         public AuthService(ApplicationDbContext context, IConfiguration configuration, IPasswordHasherService hasher)
         {
             _context = context;
@@ -26,6 +29,41 @@ namespace Infraestructure.Service
             _hasher = hasher;
         }
 
+        //Agregar validaciones de registro
+        public async Task<AuthResponse?> SingUp(SingUpRequest request)
+        {
+
+            string patron = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!Regex.IsMatch(request.Email, patron))
+            { return null; }
+            ;
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(c => c.Email == request.Email);
+            if (existingUser != null)
+                return null;
+
+
+            var hashedPassword = _hasher.Hash(request.Password);
+            var newUser = new Client
+            {
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Email = request.Email,
+                Password = hashedPassword
+            };
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+            return new AuthResponse
+            {
+                Token = GenerarToken(
+                    newUser.Id,
+                    newUser.Email,
+                    newUser.GetType().Name),
+                Rol = newUser.GetType().Name,
+                Id = newUser.Id,
+                Email = newUser.Email
+            };
+        }
 
         public async Task<AuthResponse?> SingIn(SingInRequest request)
         {
@@ -66,8 +104,8 @@ namespace Infraestructure.Service
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, rol),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,

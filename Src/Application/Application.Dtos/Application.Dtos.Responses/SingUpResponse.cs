@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Application.Dtos.Responses
 {
-    public class SingInResponse
+    public class SingUpResponse
     {
-        public SingInResponse() { }
-        public SingInResponse(Guid id, string email   )
+        public SingUpResponse() { }
+        public SingUpResponse(Guid id, string email)
         {
             this.id = id;
             this.email = email;

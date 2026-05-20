@@ -10,5 +10,7 @@ namespace Application.Interfaces
     {
 
         Task<AuthResponse?> SingIn(SingInRequest request);
+
+        Task<AuthResponse?> SingUp(SingUpRequest request);
     }
 }

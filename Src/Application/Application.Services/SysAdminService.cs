@@ -8,8 +8,8 @@ namespace Application.Services
 {
     public class SysAdminService : UserService, ISysAdminService
     {
-        public SysAdminService(IUserRepository repo, IPasswordHasherService hasher)
-            : base(repo, hasher)
+        public SysAdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext)
+            : base(repo, hasher, userContext)
         {
         }
     }

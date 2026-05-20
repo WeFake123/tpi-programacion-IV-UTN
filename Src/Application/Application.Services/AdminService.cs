@@ -9,8 +9,8 @@ namespace Application.Services
 
     public class AdminService : UserService, IAdminService
     {
-        public AdminService(IUserRepository repo, IPasswordHasherService hasher)
-            : base(repo, hasher)
+        public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext)
+            : base(repo, hasher, userContext)
         {
         }
     }
