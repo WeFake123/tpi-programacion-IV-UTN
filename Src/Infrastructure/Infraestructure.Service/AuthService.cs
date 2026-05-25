@@ -75,7 +75,7 @@ namespace Infraestructure.Service
             if (cliente == null)
                 return null;
 
-            if (!_hasher.Verify(cliente.Password, request.Password))
+            if (!_hasher.Verify(request.Password, cliente.Password))
                 return null;
 
             return new AuthResponse

@@ -66,6 +66,7 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 
 builder.Services.AddScoped<IClassService, ClassService>();
 //Servicios de utilidad
+builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpContextAccessor();
 
@@ -89,6 +90,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
 
+
 // --- PIPELINE DE LA APLICACIÓN ---
 
 var app = builder.Build();
@@ -98,6 +100,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Sembrar la base de datos con un usuario sysadmin por defecto
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider
+    .GetRequiredService<DatabaseSeeder>();
+
+
+    await seeder.SeedAsync();
+}
+
 
 app.UseHttpsRedirection();
 
