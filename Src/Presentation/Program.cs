@@ -54,7 +54,6 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ISysAdminRepository, SysAdminRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
-builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 
 
@@ -66,12 +65,11 @@ builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 
-
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 //Servicios de utilidad
 builder.Services.AddScoped<DatabaseSeeder>();
-sbuilder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
