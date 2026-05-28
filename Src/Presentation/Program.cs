@@ -53,6 +53,8 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ISysAdminRepository, SysAdminRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 
 // 3. Servicios de Aplicación (Lógica de Negocio)
@@ -61,6 +63,7 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 //Servicios de utilidad
 builder.Services.AddScoped<IAuthService, AuthService>();
 

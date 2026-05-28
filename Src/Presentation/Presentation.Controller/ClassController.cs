@@ -1,4 +1,7 @@
-﻿using Application.Interfaces;
+﻿using Application.Dtos.Request;
+using Application.Dtos.Responses;
+using Application.Interfaces;
+using Application.Services;
 using Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,24 +38,53 @@ namespace Presentation.Presentation.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<Class>> Post([FromBody] Class gymClass)
+        public async Task<IActionResult> Add([FromBody] CreateClassRequest dto)
         {
-            if (gymClass == null)
-                return BadRequest();
+            var gymClass = new Class
+            {
+                Name = dto.Name,
+                Max_Users = dto.Max_Users,
 
-            if (string.IsNullOrEmpty(gymClass.Name))
-                return BadRequest("Name is required.");
+                Schedules = dto.Schedules.Select(s => new Schedule
+                {
+                    DayOfWeek = (Day)s.DayOfWeek,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    IsActive = true
 
-            var created = await _service.Create(gymClass);
+                }).ToList()
+            };
 
-            return CreatedAtAction(nameof(GetById),
-                new { id = created.Id },
-                created);
+            await _service.Create(gymClass);
+
+            var response = new ClassResponse
+            {
+                Id = gymClass.Id,
+                Name = gymClass.Name,
+                Max_Users = gymClass.Max_Users,
+
+                Schedules = gymClass.Schedules.Select(s => new ScheduleResponse
+                {
+                    Id = s.Id,
+                    DayOfWeek = (int)s.DayOfWeek,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    IsActive = s.IsActive
+                }).ToList()
+            };
+
+            return Ok(response);
         }
-
+        
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(Guid id, Class gymClass)
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
+            var gymClass = new Class
+            {
+                Name = dto.Name,
+                Max_Users = dto.Max_Users
+            };
+
             var updated = await _service.Update(id, gymClass);
 
             if (!updated)
