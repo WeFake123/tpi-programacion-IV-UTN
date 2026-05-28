@@ -1,0 +1,99 @@
+﻿using Application.Services;
+using Domain.Entity;
+using Microsoft.AspNetCore.Mvc;
+using Application.Dtos.Request;
+using Application.Dtos.Responses;
+namespace Presentation.Controller
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ScheduleController : ControllerBase
+    {
+        private readonly IScheduleService _service;
+
+        public ScheduleController(IScheduleService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Schedule>>> Get()
+        {
+            var schedules = await _service.GetAll();
+
+            return Ok(schedules);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Schedule>> GetById(int id)
+        {
+            var schedule = await _service.GetById(id);
+
+            if (schedule == null)
+                return NotFound();
+
+            return Ok(schedule);
+        }
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody] CreateScheduleRequest dto)
+        {
+            var schedule = new Schedule
+            {
+                DayOfWeek = (Day)dto.DayOfWeek,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                Id_Class = dto.Id_Class,
+                IsActive = true
+            };
+
+            if (schedule.EndTime <= schedule.StartTime)
+                return BadRequest("EndTime must be greater than StartTime.");
+
+            var created = await _service.Create(schedule);
+
+            var response = new ScheduleResponse
+            {
+                Id = created.Id,
+                DayOfWeek = (int)created.DayOfWeek,
+                StartTime = created.StartTime,
+                EndTime = created.EndTime,
+                IsActive = created.IsActive
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, [FromBody] UpdateScheduleRequest dto)
+        {
+            var schedule = new Schedule
+            {
+                DayOfWeek = (Day)dto.DayOfWeek,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                IsActive = dto.IsActive
+            };
+
+            if (schedule.EndTime <= schedule.StartTime)
+                return BadRequest("EndTime must be greater than StartTime.");
+
+            var updated = await _service.Update(id, schedule);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _service.Delete(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+        }
+    }
+}
