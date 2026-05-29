@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Dtos.Request;
 using Application.Dtos.Responses;
-using Application.Application.Interfaces;
+using Application.Interfaces;
 namespace Presentation.Controller
 {
     [ApiController]
