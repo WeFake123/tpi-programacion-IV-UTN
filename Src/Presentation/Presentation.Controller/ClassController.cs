@@ -78,6 +78,9 @@ namespace Presentation.Presentation.Controller
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
+            if (dto == null)
+                return BadRequest();
+
             var gymClass = new Class
             {
                 Name = dto.Name,

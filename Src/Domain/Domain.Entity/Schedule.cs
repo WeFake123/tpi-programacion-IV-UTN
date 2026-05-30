@@ -6,8 +6,7 @@ namespace Domain.Entity
     {
 
         //Cambiar a Guid
-        public int Id { get; set; }
-
+        public Guid Id { get; set; }
 
         //Modificar a lista
         public Day DayOfWeek { get; set; }
@@ -22,7 +21,12 @@ namespace Domain.Entity
         public bool IsActive { get; set; } = true;
 
         public Class? Class { get; set; }
+
+        public Schedule() { }
+
     }
+
+
 
     public enum Day
     {

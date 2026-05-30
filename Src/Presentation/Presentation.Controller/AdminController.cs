@@ -28,12 +28,15 @@ namespace Presentation.Presentation.Controller
 
         [Authorize]
         [HttpPost("CreteClass")]
-        public async Task<ActionResult> CreteClass([FromBody] CreateClassAdminRequest classRequest )
+        public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
 
         {
 
-            var result = await _AdminService.CreteClass(classRequest);
-
+            var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
+            if(result == null)
+            {
+                return BadRequest("Datos incorrectos");
+            }
 
             return Ok(new
             {

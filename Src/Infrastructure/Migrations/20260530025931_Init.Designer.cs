@@ -12,15 +12,15 @@ using Trabajop4.Infrastructure;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260504214845_ReestructuracionUsuarios")]
-    partial class ReestructuracionUsuarios
+    [Migration("20260530025931_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -66,27 +66,28 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.Schedule", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid?>("ClassId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("Id_Class")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id_Class")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassId");
+                    b.HasIndex("Id_Class");
 
                     b.ToTable("Schedules");
                 });
@@ -129,14 +130,14 @@ namespace Infrastructure.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Domain.Entity.UsersChild.Admin", b =>
+            modelBuilder.Entity("Domain.Entity.Admin", b =>
                 {
                     b.HasBaseType("Domain.Entity.User");
 
                     b.HasDiscriminator().HasValue("Admin");
                 });
 
-            modelBuilder.Entity("Domain.Entity.UsersChild.Client", b =>
+            modelBuilder.Entity("Domain.Entity.Client", b =>
                 {
                     b.HasBaseType("Domain.Entity.User");
 
@@ -146,7 +147,7 @@ namespace Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("Client");
                 });
 
-            modelBuilder.Entity("Domain.Entity.UsersChild.SysAdmin", b =>
+            modelBuilder.Entity("Domain.Entity.SysAdmin", b =>
                 {
                     b.HasBaseType("Domain.Entity.User");
 
@@ -155,14 +156,18 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entity.Schedule", b =>
                 {
-                    b.HasOne("Domain.Entity.Class", null)
-                        .WithMany("schedules")
-                        .HasForeignKey("ClassId");
+                    b.HasOne("Domain.Entity.Class", "Class")
+                        .WithMany("Schedules")
+                        .HasForeignKey("Id_Class")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("Domain.Entity.Class", b =>
                 {
-                    b.Navigation("schedules");
+                    b.Navigation("Schedules");
                 });
 #pragma warning restore 612, 618
         }
