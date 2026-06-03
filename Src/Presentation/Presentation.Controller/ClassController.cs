@@ -85,7 +85,7 @@ namespace Presentation.Presentation.Controller
 
             var gymClass = new Class
             {
-                Name = dto.Name,
+                Name = dto.Name!,
                 Max_Users = dto.Max_Users
             };
 

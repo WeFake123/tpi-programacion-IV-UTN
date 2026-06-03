@@ -21,13 +21,14 @@ namespace Infraestructure.Service
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasherService _hasher;
+        private readonly IEmailService _emailService;
 
-
-        public AuthService(ApplicationDbContext context, IConfiguration configuration, IPasswordHasherService hasher)
+        public AuthService(ApplicationDbContext context, IConfiguration configuration, IPasswordHasherService hasher, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
             _hasher = hasher;
+            _emailService = emailService;
         }
 
         //Agregar validaciones de registro
@@ -45,16 +46,30 @@ namespace Infraestructure.Service
 
 
             var hashedPassword = _hasher.Hash(request.Password);
+            var verificationToken = Guid.NewGuid().ToString();
+
             var newUser = new Client
             {
                 Id = Guid.NewGuid(),
                 Name = request.Name,
                 Email = request.Email,
                 Password = hashedPassword,
-                Dni = request.Dni
+                Dni = request.Dni,
+                EmailVerified = false,
+                VerificationToken = verificationToken
             };
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+            var verificationLink = $"https://localhost:7001/api/clients/verify-email?token={verificationToken}";
+            await _emailService.SendEmailAsync(
+                newUser.Email,
+                "Verifica tu cuenta",
+                $@"
+                <h2>Bienvenido al gimnasio</h2>
+                <p>Hace click en el siguiente enlace para verificar tu cuenta:</p>
+                <a href='{verificationLink}'> Verificar cuenta</a>"
+                );
+
             return new AuthResponse
             {
                 Token = GenerarToken(
@@ -92,6 +107,21 @@ namespace Infraestructure.Service
             };
         }
 
+        public async Task<bool> VerifyEmail(string token)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.VerificationToken == token);
+
+            if (user == null)
+                return false;
+
+            user.EmailVerified = true;
+            user.VerificationToken = null;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
 
 
         private string GenerarToken(Guid userId, string email, string rol)

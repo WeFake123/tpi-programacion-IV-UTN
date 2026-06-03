@@ -49,7 +49,17 @@ namespace Presentation.Controller
 
             return Ok(response);
         }
+        [AllowAnonymous]
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            var result = await _authService.VerifyEmail(token);
 
+            if (!result)
+                return BadRequest("Token inválido.");
+
+            return Ok("Email verificado correctamente.");
+        }
 
         [AllowAnonymous]
         [HttpGet]

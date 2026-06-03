@@ -2,7 +2,9 @@
 
 User
 	-Recuperar contraseña via mail				(Maxi)
-
+	-agregar expiracion a la verificaion de mail (24 horas)
+	-crear token de recuperación de contraseña 
+	-Agregarle expiracion al token de recuperación (1 hora)
 Cliente
 	-Agregar pasarela de pagos (Puede registrarse sin plan, pero no puede anotarse en las clases)(Agregar API de MP)
 	-Validar si el usuario pago el mes
