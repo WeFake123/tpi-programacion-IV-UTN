@@ -10,5 +10,6 @@ namespace Domain.Interface
         Task<bool> Update(int id, Schedule schedule);
         Task<bool> Delete(int id);
 
+
     }
 }

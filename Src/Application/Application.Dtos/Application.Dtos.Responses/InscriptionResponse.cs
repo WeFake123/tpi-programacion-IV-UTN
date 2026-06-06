@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Entity
+namespace Application.Dtos.Responses
 {
-    public class Inscription
+    public class InscriptionResponse
     {
         public Guid Id { get; set; }
-
         public Guid UserId { get; set; }
-        public User? User { get; set; }
-
         public Guid ClassId { get; set; }
-        public Class? Class { get; set; }
-
         public DateTime InscriptionDate { get; set; }
-
         public bool IsActive { get; set; }
     }
 }

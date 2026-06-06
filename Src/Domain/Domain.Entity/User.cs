@@ -15,6 +15,10 @@ namespace Domain.Entity
 
         public string Password { get; set; } = string.Empty;
 
+        public bool EmailVerified { get; set; } = false;
+
+        public string? VerificationToken { get; set; }
+        public DateTime? VerificationTokenExpiration { get; set; }
 
     }
 }

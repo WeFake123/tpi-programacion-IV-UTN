@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Domain.Entity
 {
@@ -6,8 +7,7 @@ namespace Domain.Entity
     {
 
         //Cambiar a Guid
-        public int Id { get; set; }
-
+        public Guid Id { get; set; }
 
         //Modificar a lista
         public Day DayOfWeek { get; set; }
@@ -20,9 +20,14 @@ namespace Domain.Entity
         public Guid Id_Class { get; set; }
 
         public bool IsActive { get; set; } = true;
-
+        [JsonIgnore]
         public Class? Class { get; set; }
+
+        public Schedule() { }
+
     }
+
+
 
     public enum Day
     {

@@ -11,6 +11,7 @@ namespace Trabajop4.Infrastructure
         public DbSet<Class> Classes { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<Inscription> Inscriptions { get; set; }
 
         // Esta es la clave: el DbSet apunta a la clase base. 
         // EF creará una tabla 'Users' que incluye a Clients, Admins y SysAdmins.
