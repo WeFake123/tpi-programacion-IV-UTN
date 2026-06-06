@@ -15,6 +15,8 @@ namespace Domain.Interface
 
         Task Delete(Plan plan);
 
+        Task Update(Plan Plan);
+
         Task Save();
 
 

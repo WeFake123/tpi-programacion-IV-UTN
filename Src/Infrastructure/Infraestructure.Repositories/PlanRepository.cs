@@ -37,6 +37,13 @@ namespace Infrastructure.Repository
             await Task.CompletedTask;
         }
 
+        public Task Update(Plan plan)
+        {
+            _context.Plans.Update(plan);
+
+            return Task.CompletedTask;
+        }
+
         public async Task Save()
         {
             await _context.SaveChangesAsync();

@@ -9,8 +9,9 @@ namespace Application.Interfaces
 {
     public interface IAdminService : IUserService
     {
+        Task<Plan?> UpdatePlan(Guid id, CreatePlanAdminRequest request);
 
-        //Task<Plan?> CreatePlan(CreatePlanAdminRequest request);
+        Task<Plan?> CreatePlan(CreatePlanAdminRequest request);
 
         Task<Class?> CreteClass(CreateClassRequest request, List<CreteScheduleAdminRequest> scheduleRequests);
 

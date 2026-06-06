@@ -3,20 +3,61 @@ using Application.Dtos.Request.Admin;
 using Application.Interfaces;
 using Domain.Entity;
 using Domain.Interface;
+using System.Numerics;
+using System.Xml.Linq;
 
 namespace Application.Services
 {
 
     public class AdminService : UserService, IAdminService
     {
+        private readonly IPlanRepository _planRepo;
         private readonly IClassRepository _repo;
         private readonly IScheduleRepository _scheduleRepo;
-        public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext, IClassRepository classRepo, IScheduleRepository scheduleRepo)
+        public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext, IClassRepository classRepo, IScheduleRepository scheduleRepo, IPlanRepository planRepo)
             : base(repo, hasher, userContext)
         {
             _repo = classRepo;
             _scheduleRepo = scheduleRepo;
+            _planRepo = planRepo;   
         }
+
+
+        public async Task<Plan?> UpdatePlan(Guid id, CreatePlanAdminRequest request)
+        {
+            var plan_id = await _planRepo.GetById(id);
+
+            if (plan_id == null) return null;
+
+            plan_id.Name = request.Name;
+            plan_id.Max_Class = request.Max_Users;
+            plan_id.Value = request.value;
+
+            await _planRepo.Update(plan_id);
+            await _planRepo.Save();
+
+            return plan_id;
+
+        }
+
+        public async Task<Plan?> CreatePlan(CreatePlanAdminRequest request)
+        {
+            if (request == null) { return null; }
+
+            var plan = new Plan
+            {
+                Name = request.Name,
+                Max_Class = request.Max_Users,
+                Value = request.value
+            };
+
+
+            await _planRepo.Add(plan);
+            await _planRepo.Save();
+
+            return plan;
+        }
+
 
         public async Task<Class?> CreteClass(CreateClassRequest request, List<CreteScheduleAdminRequest> scheduleRequests)
         {
