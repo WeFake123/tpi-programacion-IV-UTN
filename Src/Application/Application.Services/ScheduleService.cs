@@ -18,7 +18,7 @@ namespace Application.Services
             return await _repository.GetAll();
         }
 
-        public async Task<Schedule?> GetById(int id)
+        public async Task<Schedule?> GetById(Guid id)
         {
             return await _repository.GetById(id);
         }
@@ -28,14 +28,14 @@ namespace Application.Services
             return await _repository.Create(schedule);
         }
 
-        public async Task<bool> Update(int id, Schedule updatedSchedule)
+        public async Task<bool> Update(Guid id, Schedule updatedSchedule)
         {
             return await _repository.Update(id, updatedSchedule);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(Schedule deleteSchedule)
         {
-            return await _repository.Delete(id);
+            return await _repository.Delete(deleteSchedule.Id);
         }
     }
 }

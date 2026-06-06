@@ -47,14 +47,6 @@ namespace Presentation.Presentation.Controller
                 Name = dto.Name,
                 Max_Users = dto.Max_Users,
 
-                Schedules = dto.Schedules.Select(s => new Schedule
-                {
-                    DayOfWeek = (Day)s.DayOfWeek,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsActive = true
-
-                }).ToList()
             };
 
             await _service.Create(gymClass);

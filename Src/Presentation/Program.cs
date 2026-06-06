@@ -4,6 +4,7 @@ using Domain.Interface;
 using Infraestructure.Service;
 using Infrastructure;
 using Infrastructure.Repositories;
+using Infrastructure.Repository;
 using Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,7 @@ builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 
 
 // 3. Servicios de Aplicación (Lógica de Negocio)

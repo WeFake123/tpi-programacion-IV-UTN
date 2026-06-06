@@ -25,7 +25,7 @@ namespace Presentation.Controller
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Schedule>> GetById(int id)
+        public async Task<ActionResult<Schedule>> GetById(Guid id)
         {
             var schedule = await _service.GetById(id);
 
@@ -63,7 +63,7 @@ namespace Presentation.Controller
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] UpdateScheduleRequest dto)
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateScheduleRequest dto)
         {
             var schedule = new Schedule
             {
@@ -85,9 +85,14 @@ namespace Presentation.Controller
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.Delete(id);
+            var schedule = await _service.GetById(id);
+
+            if (schedule == null)
+                return NotFound();
+
+            var deleted = await _service.Delete(schedule);
 
             if (!deleted)
                 return NotFound();

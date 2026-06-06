@@ -22,6 +22,7 @@ Clase
 	-Valida usuarios maximos ingresados			(Nahu)
 
 Plan
+
 	-Crear Planes con cantidad de clases maximas donde anotarse (3 planes minimo)
 	--Magi cuando hagas los planes agrega  una verificacion de que este validado el mail del usuario para que pueda comprar el plan, sino que le diga que tiene que validar el mail para comprar el plan
 

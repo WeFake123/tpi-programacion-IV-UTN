@@ -62,6 +62,9 @@ namespace Infraestructure.Service
             };
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+
+            //MOdificar el link para que apunte a la ruta correcta en el frontend
+
             var verificationLink = $"https://localhost:7001/api/clients/verify-email?token={verificationToken}";
             await _emailService.SendEmailAsync(
                 newUser.Email,

@@ -6,12 +6,11 @@ namespace Application.Interfaces
     {
         Task<List<Schedule>> GetAll();
 
-        Task<Schedule?> GetById(int id);
-
+        Task<Schedule?> GetById(Guid id);
         Task<Schedule> Create(Schedule schedule);
 
-        Task<bool> Update(int id, Schedule updatedSchedule);
+        Task<bool> Update(Guid id, Schedule updatedSchedule);
 
-        Task<bool> Delete(int id);
+        Task<bool> Delete(Schedule deleteSchedule);
     }
 }

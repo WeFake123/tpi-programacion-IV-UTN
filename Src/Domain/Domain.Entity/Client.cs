@@ -9,5 +9,6 @@ namespace Domain.Entity
 
 
         public int Id_Plan { get; set; }
+
     }
 }
