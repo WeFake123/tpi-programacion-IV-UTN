@@ -7,6 +7,7 @@ namespace Domain.Interface
 {
     public interface IPlanRepository
     {
-        List<Plan> GetAll();
+        Task<IEnumerable<Plan>> GetAll();
+        Task<Plan?> GetById(Guid id);
     }
 }

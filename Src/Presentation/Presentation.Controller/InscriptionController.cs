@@ -22,10 +22,10 @@ namespace Presentation.Presentation.Controller
         {
             var result = await _service.Inscribe(request);
 
-            if (result == null)
-                return BadRequest("No se pudo completar la inscripción. Verificá que el usuario sea un cliente, la clase tenga cupos disponibles y no estés ya inscripto.");
+            if (!result.Success)
+                return BadRequest(result.ErrorMessage);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
     }
 }

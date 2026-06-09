@@ -53,6 +53,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ISysAdminRepository, SysAdminRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 

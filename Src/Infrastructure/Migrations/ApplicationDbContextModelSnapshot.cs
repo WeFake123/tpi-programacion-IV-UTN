@@ -73,6 +73,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsUnlimited")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Max_Class")
                         .HasColumnType("int");
 
@@ -165,8 +168,10 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entity.User");
 
-                    b.Property<int>("Id_Plan")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("Id_Plan")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("Id_Plan");
 
                     b.HasDiscriminator().HasValue("Client");
                 });
@@ -206,6 +211,15 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Client", b =>
+                {
+                    b.HasOne("Domain.Entity.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("Id_Plan");
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("Domain.Entity.Class", b =>
