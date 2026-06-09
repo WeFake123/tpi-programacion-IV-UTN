@@ -1,13 +1,18 @@
-﻿using Application.Dtos.Request;
+﻿using Application.Application.Dtos.Application.Dtos.Request;
+using Application.Dtos.Request;
 using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
-using Infraestructure.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Presentation.Controller
+
+//Agregar cambiar contraseña por mail
 {
     [ApiController]
     // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos
@@ -47,7 +52,63 @@ namespace Presentation.Controller
 
             return Ok(response);
         }
+        [AllowAnonymous]
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            var result = await _authService.VerifyEmail(token);
 
+            if (!result)
+                return BadRequest("Token inválido.");
+
+            return Ok("Email verificado correctamente.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification(
+        [FromBody] ResendVerificationRequest request)
+        {
+            var result = await _authService
+                .ResendVerificationEmail(request.Email);
+
+            if (!result)
+                return BadRequest("Usuario no encontrado o ya verificado.");
+
+            return Ok("Correo de verificacion enviado.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordRequest request)
+        {
+            var result = await _authService
+                .ForgotPassword(request.Email);
+
+            if (!result)
+                return BadRequest("No existe un usuario con ese email.");
+
+            return Ok("Se envio el correo de recuperacion.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordRequest request)
+        {
+            var result = await _authService
+                .ResetPassword(
+                    request.Token,
+                    request.NewPassword);
+
+            if (!result)
+                return BadRequest(
+                    "Token invalido o expirado.");
+
+            return Ok(
+                "Contraseña actualizada correctamente.");
+        }
 
         [AllowAnonymous]
         [HttpGet]
