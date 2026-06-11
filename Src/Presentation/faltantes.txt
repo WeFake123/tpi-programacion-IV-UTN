@@ -1,0 +1,29 @@
+﻿
+
+User
+	-crear envios de mail (Maxi) terminado
+	-agregar verificacion de mail (Maxi) terminado
+	-agregar expiracion a la verificaion de mail terminado
+	-agregar reenvio de mail para verificacion de mail (Maxi) terminado
+	-crear token de recuperación de contraseña (maxi)
+	-Agregarle expiracion al token de recuperación (1 hora)
+Cliente
+	-Agregar pasarela de pagos (Puede registrarse sin plan, pero no puede anotarse en las clases)(Agregar API de MP)
+	-Validar si el usuario pago el mes
+
+Admin
+
+	-Recibir recibo de pago de usuarios
+	-Modificar planes (Agregar ofertas)
+
+
+
+Clase
+	-Valida usuarios maximos ingresados			(Nahu)
+
+Plan
+
+	-Crear Planes con cantidad de clases maximas donde anotarse (3 planes minimo)
+
+	--Magi cuando hagas los planes agrega  una verificacion de que este validado el mail del usuario para que pueda comprar el plan, sino que le diga que tiene que validar el mail para comprar el plan
+

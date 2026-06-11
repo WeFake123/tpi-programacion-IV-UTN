@@ -1,18 +1,13 @@
-﻿using Application.Application.Dtos.Application.Dtos.Request;
 using Application.Dtos.Request;
-using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Presentation.Controller
 
-//Agregar cambiar contraseña por mail
+    //Agregar cambiar contraseña por mail
 {
     [ApiController]
     // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos
@@ -28,38 +23,32 @@ namespace Presentation.Controller
             _authService = authService;
         }
 
-
         [AllowAnonymous]
         [HttpPost("singin")]
-        public async Task<ActionResult<SingInResponse>> SingIn([FromBody] SingInRequest request)
+        public async Task<ActionResult<SingInResponse>> SingIn(
+            [FromBody] SingInRequest request)
         {
             var response = await _authService.SingIn(request);
-
-            if (response == null)
-                return Unauthorized("Credenciales incorrectas.");
 
             return Ok(response);
         }
 
         [AllowAnonymous]
         [HttpPost("signup")]
-        public async Task<ActionResult<SingUpResponse>> SingUp([FromBody] SingUpRequest request)
+        public async Task<ActionResult<SingUpResponse>> SingUp(
+            [FromBody] SingUpRequest request)
         {
             var response = await _authService.SingUp(request);
 
-            if (response == null)
-                return Unauthorized("Credenciales incorrectas.");
-
             return Ok(response);
         }
+
         [AllowAnonymous]
         [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        public async Task<IActionResult> VerifyEmail(
+            [FromQuery] string token)
         {
-            var result = await _authService.VerifyEmail(token);
-
-            if (!result)
-                return BadRequest("Token inválido.");
+            await _authService.VerifyEmail(token);
 
             return Ok("Email verificado correctamente.");
         }
@@ -67,13 +56,9 @@ namespace Presentation.Controller
         [AllowAnonymous]
         [HttpPost("resend-verification")]
         public async Task<IActionResult> ResendVerification(
-        [FromBody] ResendVerificationRequest request)
+            [FromBody] ResendVerificationRequest request)
         {
-            var result = await _authService
-                .ResendVerificationEmail(request.Email);
-
-            if (!result)
-                return BadRequest("Usuario no encontrado o ya verificado.");
+            await _authService.ResendVerificationEmail(request.Email);
 
             return Ok("Correo de verificacion enviado.");
         }
@@ -81,13 +66,9 @@ namespace Presentation.Controller
         [AllowAnonymous]
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(
-        [FromBody] ForgotPasswordRequest request)
+            [FromBody] ForgotPasswordRequest request)
         {
-            var result = await _authService
-                .ForgotPassword(request.Email);
-
-            if (!result)
-                return BadRequest("No existe un usuario con ese email.");
+            await _authService.ForgotPassword(request.Email);
 
             return Ok("Se envio el correo de recuperacion.");
         }
@@ -95,19 +76,11 @@ namespace Presentation.Controller
         [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(
-        [FromBody] ResetPasswordRequest request)
+            [FromBody] ResetPasswordRequest request)
         {
-            var result = await _authService
-                .ResetPassword(
-                    request.Token,
-                    request.NewPassword);
+            await _authService.ResetPassword(request.Token, request.NewPassword);
 
-            if (!result)
-                return BadRequest(
-                    "Token invalido o expirado.");
-
-            return Ok(
-                "Contraseña actualizada correctamente.");
+            return Ok("Contraseña actualizada correctamente.");
         }
 
         [AllowAnonymous]
@@ -119,18 +92,16 @@ namespace Presentation.Controller
             return Ok(users.OfType<T>());
         }
 
-
+        //para que el usuario pueda actualizar su perfil, sin necesidad de ser admin
         [Authorize]
         [HttpPut("me")]
         public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
         {
             var result = await _service.UpdateUser(request);
 
-            if (result == null)
-                return BadRequest();
-
             return Ok(result);
         }
+
         [Authorize]
         [HttpGet("claims")]
         public IActionResult Claims()
@@ -147,30 +118,23 @@ namespace Presentation.Controller
         public virtual async Task<ActionResult<T>> GetById(Guid id)
         {
             var user = await _service.GetById(id);
-            if (user is not T typedUser) return NotFound();
-
-            return Ok(typedUser);
+            return Ok(user);
         }
 
         [AllowAnonymous]
         [HttpPost]
         public virtual async Task<ActionResult<T>> Post(T user)
         {
-            if (user == null) return BadRequest();
-
-            // La validación básica se mantiene
-            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Email))
-                return BadRequest("Name and Email are required.");
-
             var created = await _service.Create(user);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, (T)created);
         }
+
+        //para admin manejar un usuario
         [Authorize]
         [HttpPatch("{id}")]
         public virtual async Task<IActionResult> Patch(Guid id, T user)
         {
-            var updated = await _service.Update(id, user);
-            if (!updated) return NotFound();
+            await _service.Update(id, user);
 
             return NoContent();
         }
@@ -178,8 +142,7 @@ namespace Presentation.Controller
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.Delete(id);
-            if (!deleted) return NotFound();
+            await _service.Delete(id);
 
             return NoContent();
         }

@@ -1,8 +1,8 @@
-﻿using Application.Services;
-using Domain.Entity;
+﻿using Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dtos.Request;
 using Application.Dtos.Responses;
+using Application.Interfaces;
 namespace Presentation.Controller
 {
     [ApiController]
@@ -25,7 +25,7 @@ namespace Presentation.Controller
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Schedule>> GetById(int id)
+        public async Task<ActionResult<Schedule>> GetById(Guid id)
         {
             var schedule = await _service.GetById(id);
 
@@ -42,7 +42,6 @@ namespace Presentation.Controller
                 DayOfWeek = (Day)dto.DayOfWeek,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
-                Id_Class = dto.Id_Class,
                 IsActive = true
             };
 
@@ -53,7 +52,7 @@ namespace Presentation.Controller
 
             var response = new ScheduleResponse
             {
-                Id = created.Id,
+
                 DayOfWeek = (int)created.DayOfWeek,
                 StartTime = created.StartTime,
                 EndTime = created.EndTime,
@@ -64,7 +63,7 @@ namespace Presentation.Controller
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] UpdateScheduleRequest dto)
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateScheduleRequest dto)
         {
             var schedule = new Schedule
             {
@@ -86,9 +85,14 @@ namespace Presentation.Controller
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.Delete(id);
+            var schedule = await _service.GetById(id);
+
+            if (schedule == null)
+                return NotFound();
+
+            var deleted = await _service.Delete(schedule);
 
             if (!deleted)
                 return NotFound();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ReestructuracionUsuarios : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,23 +60,16 @@ namespace Infrastructure.Migrations
                 name: "Schedules",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
-
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-
                     Id_Class = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
-
                     table.ForeignKey(
                         name: "FK_Schedules_Classes_Id_Class",
                         column: x => x.Id_Class,

@@ -1,7 +1,6 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Responses;
 using Application.Interfaces;
-using Application.Services;
 using Domain.Entity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +11,12 @@ namespace Presentation.Presentation.Controller
     public class ClassController : ControllerBase
     {
         private readonly IClassService _service;
+        private readonly IEmailService _emailService;
 
-        public ClassController(IClassService service)
+        public ClassController(IClassService service, IEmailService emailService)
         {
             _service = service;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -45,14 +46,6 @@ namespace Presentation.Presentation.Controller
                 Name = dto.Name,
                 Max_Users = dto.Max_Users,
 
-                Schedules = dto.Schedules.Select(s => new Schedule
-                {
-                    DayOfWeek = (Day)s.DayOfWeek,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsActive = true
-
-                }).ToList()
             };
 
             await _service.Create(gymClass);
@@ -65,7 +58,6 @@ namespace Presentation.Presentation.Controller
 
                 Schedules = gymClass.Schedules.Select(s => new ScheduleResponse
                 {
-                    Id = s.Id,
                     DayOfWeek = (int)s.DayOfWeek,
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
@@ -75,13 +67,16 @@ namespace Presentation.Presentation.Controller
 
             return Ok(response);
         }
-        
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
+            if (dto == null)
+                return BadRequest();
+
             var gymClass = new Class
             {
-                Name = dto.Name,
+                Name = dto.Name!,
                 Max_Users = dto.Max_Users
             };
 
@@ -102,6 +97,17 @@ namespace Presentation.Presentation.Controller
                 return NotFound();
 
             return NoContent();
+        } 
+
+        [HttpGet("test-email")]
+        public async Task<IActionResult> TestEmail()
+        {
+            await _emailService.SendEmailAsync(
+                "maximohahn0@gmail.com",
+                "Prueba",
+                "<h1>Hola desde Gym API</h1>");
+
+            return Ok("Mail enviado");
         }
     }
 }

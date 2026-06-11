@@ -1,9 +1,5 @@
 ﻿using Application.Dtos.Responses;
-using Application.Dtos.Requests;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
+using Application.Dtos.Request;
 namespace Application.Interfaces
 {
     public interface IAuthService
@@ -12,5 +8,14 @@ namespace Application.Interfaces
         Task<AuthResponse?> SingIn(SingInRequest request);
 
         Task<AuthResponse?> SingUp(SingUpRequest request);
+
+        Task<bool> VerifyEmail(string token);
+        Task<bool> ResendVerificationEmail(string email);
+
+        Task<bool> ForgotPassword(string email);
+
+        Task<bool> ResetPassword(
+            string token,
+            string newPassword);
     }
 }

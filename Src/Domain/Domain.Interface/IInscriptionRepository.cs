@@ -6,6 +6,10 @@ namespace Domain.Interface
 {
     public interface IInscriptionRepository
     {
-        List<Inscription> GetAll();
+        Task<IEnumerable<Inscription>> GetAll();
+        Task<IEnumerable<Inscription>> GetByClassId(Guid classId);
+        Task<Inscription?> GetByUserAndClass(Guid userId, Guid classId);
+        Task Add(Inscription inscription);
+        Task Save();
     }
 }

@@ -16,12 +16,16 @@ namespace Infrastructure
 
         public async Task<IEnumerable<Class>> GetAll()
         {
-            return await _context.Classes.ToListAsync();
+            return await _context.Classes
+                .Include(c => c.Schedules)
+                .ToListAsync();
         }
 
         public async Task<Class?> GetById(Guid id)
         {
-            return await _context.Classes.FindAsync(id);
+            return await _context.Classes
+                .Include(c => c.Schedules)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task Add(Class gymClass)

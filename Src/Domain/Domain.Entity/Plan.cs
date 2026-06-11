@@ -14,6 +14,5 @@ namespace Domain.Entity
 
         public int Max_Class { get; set; }
 
-
     }
 }
