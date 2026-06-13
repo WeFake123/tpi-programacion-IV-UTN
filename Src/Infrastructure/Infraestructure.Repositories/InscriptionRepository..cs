@@ -36,7 +36,20 @@ namespace Infrastructure.Repositories
         {
             await _context.Inscriptions.AddAsync(inscription);
         }
-
+        public async Task<bool> ExistsByClassId(Guid classId)
+        {
+            return await _context.Inscriptions
+                .AnyAsync(i =>
+                    i.ClassId == classId &&
+                    i.IsActive);
+        }
+        public async Task<int> CountActiveByClassId(Guid classId)
+        {
+            return await _context.Inscriptions
+                .CountAsync(i =>
+                    i.ClassId == classId &&
+                    i.IsActive);
+        }
         public async Task Save()
         {
             await _context.SaveChangesAsync();

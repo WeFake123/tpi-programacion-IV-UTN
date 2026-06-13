@@ -32,9 +32,6 @@ namespace Presentation.Presentation.Controller
         {
             var gymClass = await _service.GetById(id);
 
-            if (gymClass == null)
-                return NotFound();
-
             return Ok(gymClass);
         }
 
@@ -71,19 +68,13 @@ namespace Presentation.Presentation.Controller
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
-            if (dto == null)
-                return BadRequest();
-
             var gymClass = new Class
             {
                 Name = dto.Name!,
                 Max_Users = dto.Max_Users
             };
 
-            var updated = await _service.Update(id, gymClass);
-
-            if (!updated)
-                return NotFound();
+            await _service.Update(id, gymClass);
 
             return NoContent();
         }
@@ -91,23 +82,9 @@ namespace Presentation.Presentation.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.Delete(id);
-
-            if (!deleted)
-                return NotFound();
+            await _service.Delete(id);
 
             return NoContent();
         } 
-
-        [HttpGet("test-email")]
-        public async Task<IActionResult> TestEmail()
-        {
-            await _emailService.SendEmailAsync(
-                "maximohahn0@gmail.com",
-                "Prueba",
-                "<h1>Hola desde Gym API</h1>");
-
-            return Ok("Mail enviado");
-        }
     }
 }

@@ -45,8 +45,7 @@ namespace Presentation.Controller
 
         [AllowAnonymous]
         [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail(
-            [FromQuery] string token)
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
             await _authService.VerifyEmail(token);
 
@@ -138,6 +137,7 @@ namespace Presentation.Controller
 
             return NoContent();
         }
+
         [Authorize]
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id)

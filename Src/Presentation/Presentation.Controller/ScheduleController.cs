@@ -29,11 +29,9 @@ namespace Presentation.Controller
         {
             var schedule = await _service.GetById(id);
 
-            if (schedule == null)
-                return NotFound();
-
             return Ok(schedule);
         }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CreateScheduleRequest dto)
         {
@@ -45,9 +43,7 @@ namespace Presentation.Controller
                 IsActive = true
             };
 
-            if (schedule.EndTime <= schedule.StartTime)
-                return BadRequest("EndTime must be greater than StartTime.");
-
+            
             var created = await _service.Create(schedule);
 
             var response = new ScheduleResponse
@@ -73,13 +69,8 @@ namespace Presentation.Controller
                 IsActive = dto.IsActive
             };
 
-            if (schedule.EndTime <= schedule.StartTime)
-                return BadRequest("EndTime must be greater than StartTime.");
 
-            var updated = await _service.Update(id, schedule);
-
-            if (!updated)
-                return NotFound();
+            await _service.Update(id, schedule);
 
             return NoContent();
         }
@@ -87,15 +78,7 @@ namespace Presentation.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var schedule = await _service.GetById(id);
-
-            if (schedule == null)
-                return NotFound();
-
-            var deleted = await _service.Delete(schedule);
-
-            if (!deleted)
-                return NotFound();
+            await _service.Delete(id);
 
             return NoContent();
         }

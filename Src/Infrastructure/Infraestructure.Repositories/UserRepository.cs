@@ -1,6 +1,4 @@
-﻿using Application.Dtos.Responses;
-using Application.Dtos.Requests;
-using Domain.Entity;
+﻿using Domain.Entity;
 using Domain.Interface;
 using Microsoft.EntityFrameworkCore;
 using Trabajop4.Infrastructure;
