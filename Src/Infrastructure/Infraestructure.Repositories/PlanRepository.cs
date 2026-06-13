@@ -1,5 +1,8 @@
 ﻿using Domain.Entity;
 using Domain.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Trabajop4.Infrastructure;
 
