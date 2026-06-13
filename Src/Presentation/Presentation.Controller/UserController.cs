@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 
 namespace Presentation.Controller
 
@@ -113,7 +114,7 @@ namespace Presentation.Controller
             }));
         }
 
-        [Authorize]
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<T>> GetById(Guid id)
         {
@@ -130,7 +131,7 @@ namespace Presentation.Controller
         }
 
         //para admin manejar un usuario
-        [Authorize]
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPatch("{id}")]
         public virtual async Task<IActionResult> Patch(Guid id, T user)
         {
@@ -138,7 +139,8 @@ namespace Presentation.Controller
 
             return NoContent();
         }
-        [Authorize]
+
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id)
         {

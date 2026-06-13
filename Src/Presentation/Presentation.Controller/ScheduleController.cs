@@ -1,8 +1,11 @@
 ﻿using Domain.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dtos.Request;
 using Application.Dtos.Responses;
 using Application.Interfaces;
+using Presentation.Authorization;
+
 namespace Presentation.Controller
 {
     [ApiController]
@@ -16,6 +19,7 @@ namespace Presentation.Controller
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> Get()
         {
@@ -24,6 +28,7 @@ namespace Presentation.Controller
             return Ok(schedules);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Schedule>> GetById(Guid id)
         {
@@ -34,6 +39,8 @@ namespace Presentation.Controller
 
             return Ok(schedule);
         }
+
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CreateScheduleRequest dto)
         {
@@ -62,6 +69,7 @@ namespace Presentation.Controller
             return Ok(response);
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateScheduleRequest dto)
         {
@@ -84,6 +92,7 @@ namespace Presentation.Controller
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

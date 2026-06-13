@@ -2,7 +2,9 @@
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 
 namespace Presentation.Presentation.Controller
 {
@@ -19,6 +21,7 @@ namespace Presentation.Presentation.Controller
             _emailService = emailService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Class>>> Get()
         {
@@ -27,6 +30,7 @@ namespace Presentation.Presentation.Controller
             return Ok(classes);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Class>> GetById(Guid id)
         {
@@ -38,6 +42,7 @@ namespace Presentation.Presentation.Controller
             return Ok(gymClass);
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateClassRequest dto)
         {
@@ -68,6 +73,7 @@ namespace Presentation.Presentation.Controller
             return Ok(response);
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
@@ -88,6 +94,7 @@ namespace Presentation.Presentation.Controller
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

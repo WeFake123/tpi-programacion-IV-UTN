@@ -2,10 +2,11 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 
 namespace Presentation.Presentation.Controller
 {
-    [Authorize]
+    [Authorize(Policy = Policies.SoloClient)]
     [ApiController]
     [Route("api/[controller]")]
     public class InscriptionController : ControllerBase
