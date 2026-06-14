@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Responses;
 using Application.Interfaces;
+using Application.Mapper;
 using Domain.Entity;
 using Domain.Interface;
 
@@ -81,14 +82,7 @@ namespace Application.Services
             return new InscriptionResult
             {
                 Success = true,
-                Data = new InscriptionResponse
-                {
-                    Id = inscription.Id,
-                    UserId = inscription.UserId,
-                    ClassId = inscription.ClassId,
-                    InscriptionDate = inscription.InscriptionDate,
-                    IsActive = inscription.IsActive
-                }
+                Data = inscription.ToInscriptionResponse()
             };
         }
     }

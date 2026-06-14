@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Responses;
 using Application.Interfaces;
+using Application.Mapper;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +24,11 @@ namespace Presentation.Presentation.Controller
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Class>>> Get()
+        public async Task<ActionResult> Get()
         {
             var classes = await _service.GetAll();
 
-            return Ok(classes);
+            return Ok(classes.Select(c => c.ToClassResponse()));
         }
 
         [AllowAnonymous]
@@ -39,38 +40,17 @@ namespace Presentation.Presentation.Controller
             if (gymClass == null)
                 return NotFound();
 
-            return Ok(gymClass);
+            return Ok(gymClass.ToClassResponse());
         }
 
         [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateClassRequest dto)
         {
-            var gymClass = new Class
-            {
-                Name = dto.Name,
-                Max_Users = dto.Max_Users,
-
-            };
-
+            var gymClass = dto.ToClass();
             await _service.Create(gymClass);
-
-            var response = new ClassResponse
-            {
-                Id = gymClass.Id,
-                Name = gymClass.Name,
-                Max_Users = gymClass.Max_Users,
-
-                Schedules = gymClass.Schedules.Select(s => new ScheduleResponse
-                {
-                    DayOfWeek = (int)s.DayOfWeek,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsActive = s.IsActive
-                }).ToList()
-            };
-
-            return Ok(response);
+            return Ok(gymClass.ToClassResponse());
+            
         }
 
         [Authorize(Policy = Policies.AdminOSysAdmin)]

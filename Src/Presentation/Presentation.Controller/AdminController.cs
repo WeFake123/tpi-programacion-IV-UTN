@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.Request.Admin;
 using Application.Interfaces;
+using Application.Mapper;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -131,7 +132,7 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
 
        
@@ -145,7 +146,7 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
 
        
@@ -158,7 +159,7 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
     }
 }
