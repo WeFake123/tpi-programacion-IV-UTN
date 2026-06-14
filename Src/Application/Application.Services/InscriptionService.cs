@@ -85,5 +85,24 @@ namespace Application.Services
                 Data = inscription.ToInscriptionResponse()
             };
         }
+        public async Task<InscriptionResult> Unsubscribe(Guid userId, Guid classId)
+        {
+            // 1. Buscar la inscripción
+            var inscription = await _inscriptionRepo.GetByUserAndClass(userId, classId);
+
+            if (inscription == null || !inscription.IsActive)
+                return new InscriptionResult { Success = false, ErrorMessage = "El cliente no está inscripto en esta clase." };
+
+            // 2. Desactivar la inscripción
+            await _inscriptionRepo.Unsubscribe(inscription);
+            await _inscriptionRepo.Save();
+
+            return new InscriptionResult
+            {
+                Success = true,
+                Data = inscription.ToInscriptionResponse()
+            };
+        }
     }
 }
+    

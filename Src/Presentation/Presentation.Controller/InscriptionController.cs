@@ -28,5 +28,16 @@ namespace Presentation.Presentation.Controller
 
             return Ok(new { message = "Inscripción exitosa.", data = result.Data });
         }
+
+        [HttpDelete("{userId}/{classId}")]
+        public async Task<IActionResult> Unsubscribe(Guid userId, Guid classId)
+        {
+            var result = await _service.Unsubscribe(userId, classId);
+
+            if (!result.Success)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(new { message = "Desinscripción exitosa.", data = result.Data });
+        }
     }
 }

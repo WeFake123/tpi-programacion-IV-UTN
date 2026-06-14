@@ -43,6 +43,11 @@ namespace Infrastructure.Repositories
             await _context.Inscriptions.AddAsync(inscription);
         }
 
+        public async Task Unsubscribe(Inscription inscription)
+        {
+            inscription.IsActive = false;
+            _context.Inscriptions.Update(inscription);
+        }
         public async Task Save()
         {
             await _context.SaveChangesAsync();

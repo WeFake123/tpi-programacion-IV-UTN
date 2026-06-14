@@ -11,6 +11,7 @@ namespace Domain.Interface
         Task<IEnumerable<Inscription>> GetByClassId(Guid classId);
         Task<Inscription?> GetByUserAndClass(Guid userId, Guid classId);
         Task Add(Inscription inscription);
+        Task Unsubscribe(Inscription inscription);
         Task Save();
     }
 }
