@@ -18,6 +18,12 @@ namespace Infrastructure.Repositories
         {
             return await _context.Inscriptions.ToListAsync();
         }
+        public async Task<IEnumerable<Inscription>> GetByUserId(Guid userId)
+        {
+            return await _context.Inscriptions
+                .Where(i => i.UserId == userId)
+                .ToListAsync();
+        }
 
         public async Task<IEnumerable<Inscription>> GetByClassId(Guid classId)
         {
@@ -35,6 +41,12 @@ namespace Infrastructure.Repositories
         public async Task Add(Inscription inscription)
         {
             await _context.Inscriptions.AddAsync(inscription);
+        }
+
+        public async Task Unsubscribe(Inscription inscription)
+        {
+            inscription.IsActive = false;
+            _context.Inscriptions.Update(inscription);
         }
         public async Task<bool> ExistsByClassId(Guid classId)
         {

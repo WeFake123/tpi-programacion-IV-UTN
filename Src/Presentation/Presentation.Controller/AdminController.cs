@@ -1,14 +1,16 @@
 ﻿using Application.Dtos.Request.Admin;
 using Application.Interfaces;
+using Application.Mapper;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 using Presentation.Controller;
 
 namespace Presentation.Presentation.Controller
 {
 
-
+    [Authorize(Policy = Policies.AdminOSysAdmin)]
     public class AdminController : UsersController<Admin>
     {
 
@@ -27,7 +29,7 @@ namespace Presentation.Presentation.Controller
 
         // -------------PLAN controller --------------------
 
-        [Authorize]
+        
         [HttpPost("UpdatePlan")]
         public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
@@ -43,7 +45,7 @@ namespace Presentation.Presentation.Controller
             });
         }
 
-        [Authorize]
+        
         [HttpPost("CreatePlan")]
         public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
         {
@@ -59,7 +61,7 @@ namespace Presentation.Presentation.Controller
            });
         }
 
-        [Authorize]
+        
         [HttpPost("DeletePlan")]
         public async Task<ActionResult> DeletePlan(Guid id)
         {
@@ -71,7 +73,7 @@ namespace Presentation.Presentation.Controller
             return Ok(result);
         }
 
-        [Authorize]
+        
         [HttpGet("GetPlan")]
         public async Task<ActionResult<IEnumerable<Plan>>> GetPlan()
         {
@@ -84,7 +86,7 @@ namespace Presentation.Presentation.Controller
         }
 
         //-----------------Schedule Controller ----------------------------
-        [Authorize]
+       
         [HttpPost("DeleteSchedule")]
         public async Task<ActionResult> DeleteSchedule(Guid id)
         {
@@ -100,7 +102,7 @@ namespace Presentation.Presentation.Controller
         //-------------------- Class controler-----------------------------
 
 
-        [Authorize]
+        
         [HttpPost("CreteClass")]
         public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
 
@@ -120,7 +122,7 @@ namespace Presentation.Presentation.Controller
 
         }
 
-        [Authorize]
+        
         [HttpGet("getClass")]
         public async Task<ActionResult> GetClass()
         {
@@ -130,10 +132,10 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
 
-        [Authorize]
+       
         [HttpPut("updateClass/{id}")]
         public async Task<ActionResult> UpdateClass(Guid id, [FromBody] CreateClassWithSchedulesRequest request)
         {
@@ -144,10 +146,10 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
 
-        [Authorize]
+       
         [HttpDelete("deleteClass/{id}")]
         public async Task<ActionResult<IEnumerable<Class?>>> DeleteClass(Guid id)
         {
@@ -157,7 +159,7 @@ namespace Presentation.Presentation.Controller
                 return NotFound("Clase no encontrada");
             }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
     }
 }

@@ -5,6 +5,7 @@ namespace Application.Interfaces
 {
     public interface IInscriptionService
     {
-        Task<InscriptionResponse?> Inscribe(InscriptionRequest request);
+        Task<InscriptionResult> Inscribe(InscriptionRequest request);
+        Task<InscriptionResult> Unsubscribe(Guid userId, Guid classId);
     }
 }
