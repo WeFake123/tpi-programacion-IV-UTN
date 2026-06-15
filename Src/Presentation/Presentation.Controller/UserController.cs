@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
 
 namespace Presentation.Controller
-
-    //Agregar cambiar contraseña por mail
 {
     [ApiController]
     // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos

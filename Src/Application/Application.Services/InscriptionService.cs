@@ -28,7 +28,6 @@ namespace Application.Services
 
         public async Task<InscriptionResult> Inscribe(InscriptionRequest request)
         {
-            // 1. Validar que el usuario existe y es un Client
             var user = await _userRepo.GetById(request.UserId);
             if (user == null || user is not Client client)
                 return new InscriptionResult { Success = false, ErrorMessage = "El usuario no existe o no es un cliente." };
