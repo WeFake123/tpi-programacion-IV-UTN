@@ -1,10 +1,9 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Request.Admin;
+using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Entity;
 using Domain.Interface;
-using System.Numerics;
-using System.Xml.Linq;
 
 namespace Application.Services
 {
@@ -14,6 +13,7 @@ namespace Application.Services
         private readonly IPlanRepository _planRepo;
         private readonly IClassRepository _repo;
         private readonly IScheduleRepository _scheduleRepo;
+        private readonly IInscriptionRepository _inscriptionRepo;
         public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext, IClassRepository classRepo, IScheduleRepository scheduleRepo, IPlanRepository planRepo)
             : base(repo, hasher, userContext)
         {
@@ -29,8 +29,19 @@ namespace Application.Services
         public async Task<Plan?> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
             var plan_id = await _planRepo.GetById(id);
+            var plan = await _planRepo.GetById(id);
 
-            if (plan_id == null) return null;
+            if (plan == null)
+                throw new NotFoundException("Plan not found");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Plan name is required");
+
+            if (request.Max_Users <= 0)
+                throw new ValidationException("Max users must be greater than zero");
+
+            if (request.value <= 0)
+                throw new ValidationException("Plan value must be greater than zero");
 
             plan_id.Name = request.Name;
             plan_id.Max_Class = request.Max_Users;
@@ -45,7 +56,17 @@ namespace Application.Services
 
         public async Task<Plan?> CreatePlan(CreatePlanAdminRequest request)
         {
-            if (request == null) { return null; }
+            if (request == null)
+                throw new BadRequestException("Request cannot be null");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Plan name is required");
+
+            if (request.Max_Users <= 0)
+                throw new ValidationException("Max users must be greater than zero");
+
+            if (request.value <= 0)
+                throw new ValidationException("Plan value must be greater than zero");
 
             var plan = new Plan
             {
@@ -63,8 +84,12 @@ namespace Application.Services
 
         public async Task<Plan?> DeletePlan(Guid id)
         {
+
             var plan = await _planRepo.GetById(id);
-            if (plan == null) return null;
+            if (plan == null)
+                throw new NotFoundException("Plan not found");
+            throw new ConflictException(
+    "Plan cannot be deleted because it is currently assigned to users");
             await _planRepo.Delete(plan);
             await _planRepo.Save();
             return plan;
@@ -112,10 +137,14 @@ namespace Application.Services
 
         public async Task<Class?> CreteClass(CreateClassRequest request, List<CreteScheduleAdminRequest> scheduleRequests)
         {
-            if (request == null) { return null; }
-            ;
-            if (request.Max_Users < 1) { return null; }
-            ;
+            if (request == null)
+                throw new BadRequestException("Request cannot be null");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Class name is required");
+
+            if (request.Max_Users <= 0)
+                throw new ValidationException("Max users must be greater than zero");
 
             var schedules = new List<Schedule>();
 
