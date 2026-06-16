@@ -37,22 +37,43 @@ namespace Application.Services
             if (gymClass == null)
                 return new InscriptionResult { Success = false, ErrorMessage = "La clase no existe." };
 
-            // 3. Validar que el usuario no esté ya inscripto
+            // 3. Validar que no haya superposición de horarios con otras clases del cliente
+            var clientActiveInscriptions = await _inscriptionRepo.GetByUserId(request.UserId);
+            foreach (var activeInscription in clientActiveInscriptions.Where(i => i.IsActive))
+            {
+                var otherClass = await _classRepo.GetById(activeInscription.ClassId);
+                if (otherClass == null) continue;
+
+                foreach (var newSchedule in gymClass.Schedules)
+                {
+                    foreach (var existingSchedule in otherClass.Schedules)
+                    {
+                        if (newSchedule.DayOfWeek == existingSchedule.DayOfWeek &&
+                            newSchedule.StartTime < existingSchedule.EndTime &&
+                            existingSchedule.StartTime < newSchedule.EndTime)
+                        {
+                            return new InscriptionResult { Success = false, ErrorMessage = $"El horario se superpone con la clase '{otherClass.Name}' a la que ya estás inscripto." };
+                        }
+                    }
+                }
+            }
+
+            // 4. Validar que el usuario no esté ya inscripto
             var existing = await _inscriptionRepo.GetByUserAndClass(request.UserId, request.ClassId);
             if (existing != null && existing.IsActive)
                 return new InscriptionResult { Success = false, ErrorMessage = "El cliente ya está inscripto en esta clase." };
 
-            // 4. Validar cupos disponibles en la clase
+            // 5. Validar cupos disponibles en la clase
             var inscriptions = await _inscriptionRepo.GetByClassId(request.ClassId);
             var activeCount = inscriptions.Count(i => i.IsActive);
             if (activeCount >= gymClass.Max_Users)
                 return new InscriptionResult { Success = false, ErrorMessage = "La clase no tiene cupos disponibles." };
 
-            // 5. Validar que el cliente tiene plan
+            // 6. Validar que el cliente tiene plan
             if (client.Id_Plan == null)
                 return new InscriptionResult { Success = false, ErrorMessage = "El cliente no tiene un plan activo." };
 
-            // 6. Validar límite del plan
+            // 7. Validar límite del plan
             var plan = await _planRepo.GetById(client.Id_Plan.Value);
             if (plan == null)
                 return new InscriptionResult { Success = false, ErrorMessage = "El plan del cliente no existe." };
@@ -65,7 +86,7 @@ namespace Application.Services
                     return new InscriptionResult { Success = false, ErrorMessage = $"El cliente alcanzó el límite de clases de su plan ({plan.Max_Class})." };
             }
 
-            // 7. Crear la inscripción
+            // 8. Crear la inscripción
             var inscription = new Inscription
             {
                 Id = Guid.NewGuid(),
