@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Request.Admin;
+using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Entity;
 using Domain.Interface;
@@ -14,12 +15,16 @@ namespace Application.Services
         private readonly IPlanRepository _planRepo;
         private readonly IClassRepository _repo;
         private readonly IScheduleRepository _scheduleRepo;
-        public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext, IClassRepository classRepo, IScheduleRepository scheduleRepo, IPlanRepository planRepo)
+        private readonly IUserRepository _userRepo;
+        private readonly IInscriptionRepository _inscriptionRepo;
+        public AdminService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext, IClassRepository classRepo, IScheduleRepository scheduleRepo, IPlanRepository planRepo, IUserRepository userRepo, IInscriptionRepository inscriptionRepo)
             : base(repo, hasher, userContext)
         {
             _repo = classRepo;
             _scheduleRepo = scheduleRepo;
-            _planRepo = planRepo;   
+            _planRepo = planRepo;
+            _userRepo = userRepo;
+            _inscriptionRepo = inscriptionRepo;
         }
 
 
@@ -30,7 +35,15 @@ namespace Application.Services
         {
             var plan_id = await _planRepo.GetById(id);
 
-            if (plan_id == null) return null;
+            if (plan_id == null)
+                throw new NotFoundException("Plan not found");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Plan name is required");
+            if (request.Max_Users < 0 || request.Max_Users > 100)
+                throw new ValidationException("Max classes must be between 0 and 100");
+            if (request.value <= 0)
+                throw new ValidationException("Plan value must be greater than zero");
 
             plan_id.Name = request.Name;
             plan_id.Max_Class = request.Max_Users;
@@ -45,7 +58,17 @@ namespace Application.Services
 
         public async Task<Plan?> CreatePlan(CreatePlanAdminRequest request)
         {
-            if (request == null) { return null; }
+            if (request == null)
+                throw new BadRequestException("Request cannot be null");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Plan name is required");
+
+            if (request.value <= 0)
+                throw new ValidationException("Plan value must be greater than zero");
+
+            if (request.Max_Users < 0)
+                throw new ValidationException("Max classes cannot be negative");
 
             var plan = new Plan
             {
@@ -64,7 +87,15 @@ namespace Application.Services
         public async Task<Plan?> DeletePlan(Guid id)
         {
             var plan = await _planRepo.GetById(id);
-            if (plan == null) return null;
+            var clientsUsingPlan = await _userRepo.GetClientsByPlanId(id);
+            if (plan == null)
+                throw new NotFoundException("Plan not found");
+            if (clientsUsingPlan.Any())
+            {
+                throw new ConflictException(
+                    "Cannot delete a plan assigned to clients");
+            }
+
             await _planRepo.Delete(plan);
             await _planRepo.Save();
             return plan;
@@ -83,9 +114,10 @@ namespace Application.Services
         {
 
             var gymClass = await _repo.GetById(id);
-
             if (gymClass == null)
-                return null;
+                throw new NotFoundException("Class not found");
+            if (request.Max_Users <= 0 || request.Max_Users >= 100)
+                throw new ValidationException("Max users must be greater than zero and less than or equal to 100");
 
             gymClass.Name = request.Name ?? gymClass.Name;
             if (request.Max_Users != 0) gymClass.Max_Users = request.Max_Users;
@@ -104,7 +136,14 @@ namespace Application.Services
         public async Task<IEnumerable<Class?>> DeleteClass(Guid id)
         {
             var gymClass = await _repo.GetById(id);
-            if (gymClass == null) return null;
+            if (gymClass == null)
+                throw new NotFoundException("Class not found");
+            var classHasInscriptions = await _inscriptionRepo.ExistsByClassId(id);
+
+            if (classHasInscriptions)
+            {
+                throw new ConflictException("Cannot delete a class with active inscriptions");
+            }
             await _repo.Delete(gymClass);
             await _repo.Save();
             return await _repo.GetAll();
@@ -112,20 +151,22 @@ namespace Application.Services
 
         public async Task<Class?> CreteClass(CreateClassRequest request, List<CreteScheduleAdminRequest> scheduleRequests)
         {
-            if (request == null) { return null; }
-            ;
-            if (request.Max_Users < 1) { return null; }
-            ;
+            if (request == null)
+                throw new BadRequestException("Request cannot be null");
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Class name is required");
 
+            if (request.Max_Users <= 0)
+                throw new ValidationException("Max users must be greater than zero");
+
+            if (scheduleRequests == null || !scheduleRequests.Any())
+                throw new ValidationException(
+                    "At least one schedule is required");
             var schedules = new List<Schedule>();
 
             foreach (var scheduleRequest in scheduleRequests)
             {
-                var schedule = await CreteSchedule(scheduleRequest);
-
-                if (schedule == null)
-                    return null;
-
+                var schedule = await CreteSchedule(scheduleRequest); 
                 schedules.Add(schedule);
             }
 
@@ -152,10 +193,12 @@ namespace Application.Services
 
         public async Task<Schedule?> CreteSchedule(CreteScheduleAdminRequest request)
         {
-            if (request == null) { return null; }
-            ;
+            if (request == null)
+                throw new BadRequestException("Request cannot be null");
 
-            if (request.StartTime >= request.EndTime) { return null; }
+            if (request.StartTime >= request.EndTime)
+                throw new ValidationException("Start time must be before end time");
+
             var schedule = new Schedule
             {
                 DayOfWeek = (Day)request.DayOfWeek,
@@ -169,7 +212,8 @@ namespace Application.Services
         public async Task<Schedule?> DeleteSchedule(Guid id)
         {
             var schedule = await _scheduleRepo.GetById(id);
-            if (schedule == null) return null;
+            if (schedule == null)
+                throw new NotFoundException("Schedule not found");
             await _scheduleRepo.Delete(id);
             await _scheduleRepo.Save();
             return schedule;
@@ -181,11 +225,14 @@ namespace Application.Services
             var gymClass = await _repo.GetById(id);
 
             if (gymClass == null)
-                return null;
+                throw new NotFoundException("Class not found");
 
             var schedules = new List<Schedule>();
 
-
+            if (scheduleRequests.Any(s => s.StartTime >= s.EndTime))
+            {
+                throw new ValidationException("Start time must be before end time");
+            }
             foreach (var schedule in scheduleRequests)
             {
                 var pushOrigin = false;

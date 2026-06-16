@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Exceptions;
+using Application.Interfaces;
 using Domain.Entity;
 using Domain.Interface;
 
@@ -16,7 +17,7 @@ namespace Application.Services
             var user = await _repo.GetById(id);
 
             if (user == null)
-                throw new Exception("User not found");
+                throw new NotFoundException("User not found");
 
             user.Name = updatedUser.Name ?? user.Name;
             user.Email = updatedUser.Email ?? user.Email;

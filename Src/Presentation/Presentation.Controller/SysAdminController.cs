@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Request;
+using Application.Dtos.Request;
 using Application.Interfaces;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
@@ -20,19 +20,15 @@ namespace Presentation.Presentation.Controller
 
         }
 
-        
+        [Authorize]
         [HttpPost("UpgradeUsersRol")]
         public async Task<ActionResult> UpgradeUsersRol([FromBody] UpgradeUsersRol request)
         {
-
             var result = await _sysAdminService.UpgradeUsersRol(request);
-
-            if (result == null)
-                return NotFound();
 
             return Ok(new
             {
-                Message = "Rol actualizado correctamente",
+                Message = "Role updated successfully",
                 User = result.Email
             });
         }

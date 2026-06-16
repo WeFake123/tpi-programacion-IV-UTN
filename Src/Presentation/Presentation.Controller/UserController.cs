@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
 
 namespace Presentation.Controller
-
-    //Agregar cambiar contraseña por mail
 {
     [ApiController]
     // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos
@@ -46,8 +44,7 @@ namespace Presentation.Controller
 
         [AllowAnonymous]
         [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail(
-            [FromQuery] string token)
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
             await _authService.VerifyEmail(token);
 
@@ -85,6 +82,7 @@ namespace Presentation.Controller
         }
 
         [AllowAnonymous]
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<T>>> Get()
         {

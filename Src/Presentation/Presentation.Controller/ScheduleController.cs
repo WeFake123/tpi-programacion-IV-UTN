@@ -32,10 +32,8 @@ namespace Presentation.Controller
         public async Task<ActionResult> GetById(Guid id)
         {
             var schedule = await _service.GetById(id);
-            if (schedule == null)
-                return NotFound();
 
-            return Ok(schedule.ToScheduleResponse());
+            return Ok(schedule);
         }
 
         [Authorize(Policy = Policies.AdminOSysAdmin)]
@@ -44,9 +42,7 @@ namespace Presentation.Controller
         {
             var schedule = dto.ToSchedule();
 
-            if (schedule.EndTime <= schedule.StartTime)
-                return BadRequest("EndTime must be greater than StartTime.");
-
+            
             var created = await _service.Create(schedule);
             return Ok(created.ToScheduleResponse());
         }
@@ -57,12 +53,8 @@ namespace Presentation.Controller
         {
             var schedule = dto.ToSchedule();
 
-            if (schedule.EndTime <= schedule.StartTime)
-                return BadRequest("EndTime must be greater than StartTime.");
 
-            var updated = await _service.Update(id, schedule);
-            if (!updated)
-                return NotFound();
+            await _service.Update(id, schedule);
 
             return NoContent();
         }
@@ -71,13 +63,7 @@ namespace Presentation.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var schedule = await _service.GetById(id);
-            if (schedule == null)
-                return NotFound();
-
-            var deleted = await _service.Delete(schedule);
-            if (!deleted)
-                return NotFound();
+            await _service.Delete(id);
 
             return NoContent();
         }
