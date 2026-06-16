@@ -10,6 +10,7 @@ namespace Application.Mapper
         {
             return new ScheduleResponse
             {
+                Id = schedule.Id,
                 DayOfWeek = (int)schedule.DayOfWeek,
                 StartTime = schedule.StartTime,
                 EndTime = schedule.EndTime,
