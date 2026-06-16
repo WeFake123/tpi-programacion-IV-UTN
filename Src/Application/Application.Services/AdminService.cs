@@ -1,7 +1,9 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Request.Admin;
+using Application.Dtos.Responses;
 using Application.Exceptions;
 using Application.Interfaces;
+using Application.Mapper;
 using Domain.Entity;
 using Domain.Interface;
 using System.Numerics;
@@ -186,6 +188,32 @@ namespace Application.Services
         public async Task<IEnumerable<Class>> GetClass()
         {
             return await _repo.GetAll();
+        }
+
+        public async Task<ClassDetailResponse?> GetClassDetail(Guid id)
+        {
+            var gymClass = await _repo.GetById(id);
+            if (gymClass == null)
+                throw new NotFoundException("Class not found");
+
+            var inscriptions = await _inscriptionRepo.GetByClassId(id);
+            var activeInscriptions = inscriptions.Where(i => i.IsActive).ToList();
+
+            var clients = new List<ClientInfoResponse>();
+            foreach (var inscription in activeInscriptions)
+            {
+                var user = await _userRepo.GetById(inscription.UserId);
+                if (user != null)
+                {
+                    clients.Add(new ClientInfoResponse
+                    {
+                        Name = user.Name,
+                        Email = user.Email
+                    });
+                }
+            }
+
+            return gymClass.ToClassDetailResponse(activeInscriptions.Count, clients);
         }
 
 

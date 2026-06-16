@@ -17,6 +17,19 @@ namespace Application.Mapper
             };
         }
 
+        public static ClassDetailResponse ToClassDetailResponse(this Class gymClass, int currentInscriptions, List<ClientInfoResponse> clients)
+        {
+            return new ClassDetailResponse
+            {
+                Id = gymClass.Id,
+                Name = gymClass.Name,
+                Max_Users = gymClass.Max_Users,
+                CurrentInscriptions = currentInscriptions,
+                Schedules = gymClass.Schedules.Select(s => s.ToScheduleResponse()).ToList(),
+                Clients = clients
+            };
+        }
+
         public static Class ToClass(this CreateClassRequest request)
         {
             return new Class

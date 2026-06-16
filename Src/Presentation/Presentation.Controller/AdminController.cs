@@ -104,7 +104,14 @@ namespace Presentation.Presentation.Controller
             return Ok(result.Select(c => c.ToClassResponse()));
         }
 
-       
+        [HttpGet("getClassDetail/{id}")]
+        public async Task<ActionResult> GetClassDetail(Guid id)
+        {
+            var result = await _AdminService.GetClassDetail(id);
+            return Ok(result);
+        }
+
+
         [HttpPut("updateClass/{id}")]
         public async Task<ActionResult> UpdateClass(Guid id, [FromBody] CreateClassWithSchedulesRequest request)
         {
