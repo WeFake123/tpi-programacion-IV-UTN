@@ -82,6 +82,7 @@ namespace Presentation.Controller
         }
 
         [AllowAnonymous]
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<T>>> Get()
         {

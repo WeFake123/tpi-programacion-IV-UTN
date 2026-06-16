@@ -34,10 +34,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
             var result = await _AdminService.UpdatePlan(id, request);
-            if (result == null)
-            {
-                return BadRequest("Datos incorrectos");
-            }
             return Ok(new
             {
                 Message = "Clase creada correctamente",
@@ -50,10 +46,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
         {
             var result = await _AdminService.CreatePlan(request);
-            if (result == null)
-            {
-              return BadRequest("Datos incorrectos");
-          }
             return Ok(new
            {
                Message = "Clase creada correctamente",
@@ -66,10 +58,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult> DeletePlan(Guid id)
         {
             var result = await _AdminService.DeletePlan(id);
-            if (result == null)
-            {
-                return NotFound("Plan no encontrado");
-            }
             return Ok(result);
         }
 
@@ -78,10 +66,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult<IEnumerable<Plan>>> GetPlan()
         {
             var result = await _AdminService.GetPlan();
-            if (result == null)
-            {
-                return NotFound("Planes no encontrados");
-            }
             return Ok(result);
         }
 
@@ -91,10 +75,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult> DeleteSchedule(Guid id)
         {
             var result = await _AdminService.DeleteSchedule(id);
-            if (result == null)
-            {
-                return NotFound("Horario no encontrado");
-            }
             return Ok(result);
         }
 
@@ -105,14 +85,8 @@ namespace Presentation.Presentation.Controller
         
         [HttpPost("CreteClass")]
         public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
-
         {
-
             var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
-            if (result == null)
-            {
-                return BadRequest("Datos incorrectos");
-            }
 
             return Ok(new
             {
@@ -127,11 +101,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult> GetClass()
         {
             var result = await _AdminService.GetClass();
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
-
             return Ok(result.Select(c => c.ToClassResponse()));
         }
 
@@ -141,10 +110,6 @@ namespace Presentation.Presentation.Controller
         {
 
             var result = await _AdminService.UpdateClass(id, request.ClassRequest, request.ScheduleRequests);
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
 
             return Ok(result.Select(c => c.ToClassResponse()));
         }
@@ -154,10 +119,6 @@ namespace Presentation.Presentation.Controller
         public async Task<ActionResult<IEnumerable<Class?>>> DeleteClass(Guid id)
         {
             var result = await _AdminService.DeleteClass(id);
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
 
             return Ok(result.Select(c => c.ToClassResponse()));
         }

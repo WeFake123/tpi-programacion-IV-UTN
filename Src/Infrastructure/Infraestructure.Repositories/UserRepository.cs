@@ -42,10 +42,17 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<Client>> GetClientsByPlanId(Guid planId)
+    {
+        return await _context.Users
+            .OfType<Client>()
+            .Where(c => c.Id_Plan == planId)
+            .ToListAsync();
+    }
+
     public async Task<User?> GetByEmail(string email)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
     }
     //public async Task<SingInResponse?> SingIn(SingInRequest userData)
     //{
