@@ -25,6 +25,15 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Inscription>> GetByUserIdWithClass(Guid userId)
+        {
+            return await _context.Inscriptions
+                .Include(i => i.Class)
+                .ThenInclude(c => c.Schedules)
+                .Where(i => i.UserId == userId && i.IsActive)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Inscription>> GetByClassId(Guid classId)
         {
             return await _context.Inscriptions

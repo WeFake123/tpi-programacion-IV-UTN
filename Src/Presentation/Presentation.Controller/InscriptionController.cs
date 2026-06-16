@@ -12,10 +12,12 @@ namespace Presentation.Presentation.Controller
     public class InscriptionController : ControllerBase
     {
         private readonly IInscriptionService _service;
+        private readonly IUserContext _userContext;
 
-        public InscriptionController(IInscriptionService service)
+        public InscriptionController(IInscriptionService service, IUserContext userContext)
         {
             _service = service;
+            _userContext = userContext;
         }
 
         [HttpPost]
@@ -38,6 +40,13 @@ namespace Presentation.Presentation.Controller
                 return BadRequest(result.ErrorMessage);
 
             return Ok(new { message = "Desinscripción exitosa.", data = result.Data });
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyInscriptions()
+        {
+            var result = await _service.GetMyInscriptions(_userContext.UserId);
+            return Ok(result);
         }
     }
 }

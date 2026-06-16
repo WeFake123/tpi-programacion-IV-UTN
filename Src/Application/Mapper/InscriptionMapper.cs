@@ -18,6 +18,18 @@ namespace Application.Mapper
             };
         }
 
+        public static MyInscriptionResponse ToMyInscriptionResponse(this Inscription inscription)
+        {
+            return new MyInscriptionResponse
+            {
+                InscriptionId = inscription.Id,
+                ClassId = inscription.ClassId,
+                ClassName = inscription.Class?.Name ?? string.Empty,
+                Schedules = inscription.Class?.Schedules?.Select(s => s.ToScheduleResponse()).ToList() ?? new(),
+                InscriptionDate = inscription.InscriptionDate
+            };
+        }
+
         public static Inscription ToInscription(this InscriptionRequest request)
         {
             return new Inscription

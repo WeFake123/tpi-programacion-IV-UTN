@@ -102,6 +102,12 @@ namespace Application.Services
                 Data = inscription.ToInscriptionResponse()
             };
         }
+
+        public async Task<IEnumerable<MyInscriptionResponse>> GetMyInscriptions(Guid userId)
+        {
+            var inscriptions = await _inscriptionRepo.GetByUserIdWithClass(userId);
+            return inscriptions.Select(i => i.ToMyInscriptionResponse());
+        }
     }
 }
     

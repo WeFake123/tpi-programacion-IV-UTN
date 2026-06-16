@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task<InscriptionResult> Inscribe(InscriptionRequest request);
         Task<InscriptionResult> Unsubscribe(Guid userId, Guid classId);
+        Task<IEnumerable<MyInscriptionResponse>> GetMyInscriptions(Guid userId);
     }
 }
