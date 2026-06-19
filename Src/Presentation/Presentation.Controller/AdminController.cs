@@ -11,7 +11,6 @@ using Presentation.Controller;
 namespace Presentation.Presentation.Controller
 {
 
-
     public class AdminController : UsersController<Admin>
     {
 

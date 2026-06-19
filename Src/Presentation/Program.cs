@@ -96,6 +96,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
+builder.Services.AddHttpClient<IMercadoPagoService,
+    MercadoPagoService>(client =>
+    {
+        client.BaseAddress =
+            new Uri("https://api.mercadopago.com/");
+    });
+
+
 
 
 // --- PIPELINE DE LA APLICACIÓN ---
@@ -120,7 +128,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
