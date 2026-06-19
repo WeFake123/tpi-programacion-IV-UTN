@@ -217,6 +217,7 @@ namespace Application.Services
         }
 
 
+
         // -------------------------CRUD for Schedule---------------------
 
         public async Task<Schedule?> CreteSchedule(CreteScheduleAdminRequest request)
@@ -281,5 +282,25 @@ namespace Application.Services
             }
             return schedules;
         }
+
+        // -------------------------Client Inscriptions---------------------
+
+        public async Task<ClientInscriptionsResponse?> GetClientInscriptions(Guid clientId)
+        {
+            var user = await _userRepo.GetById(clientId);
+            if (user == null || user is not Client client)
+                throw new NotFoundException("Client not found");
+
+            var inscriptions = await _inscriptionRepo.GetByUserIdWithClass(clientId);
+
+            return new ClientInscriptionsResponse
+            {
+                ClientId = client.Id,
+                ClientName = client.Name,
+                ClientEmail = client.Email,
+                Inscriptions = inscriptions.Select(i => i.ToMyInscriptionResponse()).ToList()
+            };
+        }
     }
 }
+    

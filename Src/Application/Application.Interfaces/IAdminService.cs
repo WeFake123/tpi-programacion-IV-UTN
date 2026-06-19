@@ -27,6 +27,8 @@ namespace Application.Interfaces
 
         Task<ClassDetailResponse?> GetClassDetail(Guid id);
 
+        Task<ClientInscriptionsResponse?> GetClientInscriptions(Guid clientId);
+
         Task<IEnumerable<Class?>> UpdateClass(Guid id, CreateClassRequest request, List<CreteScheduleAdminRequest> scheduleRequests);
 
 
