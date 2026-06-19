@@ -1,9 +1,11 @@
 ﻿using Application.Dtos.Request;
 using Application.Dtos.Responses;
 using Application.Interfaces;
-using Application.Services;
+using Application.Mapper;
 using Domain.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 
 namespace Presentation.Presentation.Controller
 {
@@ -12,96 +14,64 @@ namespace Presentation.Presentation.Controller
     public class ClassController : ControllerBase
     {
         private readonly IClassService _service;
+        private readonly IEmailService _emailService;
 
-        public ClassController(IClassService service)
+        public ClassController(IClassService service, IEmailService emailService)
         {
             _service = service;
+            _emailService = emailService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Class>>> Get()
+        public async Task<ActionResult> Get()
         {
             var classes = await _service.GetAll();
 
-            return Ok(classes);
+            return Ok(classes.Select(c => c.ToClassResponse()));
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Class>> GetById(Guid id)
         {
             var gymClass = await _service.GetById(id);
 
-            if (gymClass == null)
-                return NotFound();
-
             return Ok(gymClass);
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateClassRequest dto)
         {
-            var gymClass = new Class
-            {
-                Name = dto.Name,
-                Max_Users = dto.Max_Users,
-
-                Schedules = dto.Schedules.Select(s => new Schedule
-                {
-                    DayOfWeek = (Day)s.DayOfWeek,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsActive = true
-
-                }).ToList()
-            };
-
+            var gymClass = dto.ToClass();
             await _service.Create(gymClass);
-
-            var response = new ClassResponse
-            {
-                Id = gymClass.Id,
-                Name = gymClass.Name,
-                Max_Users = gymClass.Max_Users,
-
-                Schedules = gymClass.Schedules.Select(s => new ScheduleResponse
-                {
-                    Id = s.Id,
-                    DayOfWeek = (int)s.DayOfWeek,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsActive = s.IsActive
-                }).ToList()
-            };
-
-            return Ok(response);
+            return Ok(gymClass.ToClassResponse());
+            
         }
-        
+
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UpdateClassRequest dto)
         {
             var gymClass = new Class
             {
-                Name = dto.Name,
+                Name = dto.Name!,
                 Max_Users = dto.Max_Users
             };
 
-            var updated = await _service.Update(id, gymClass);
-
-            if (!updated)
-                return NotFound();
+            await _service.Update(id, gymClass);
 
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.Delete(id);
-
-            if (!deleted)
-                return NotFound();
+            await _service.Delete(id);
 
             return NoContent();
-        }
+        } 
     }
 }

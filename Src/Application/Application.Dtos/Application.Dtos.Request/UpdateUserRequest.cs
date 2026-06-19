@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dtos.Request
+﻿namespace Application.Dtos.Request
 {
     public class UpdateUserRequest
     {

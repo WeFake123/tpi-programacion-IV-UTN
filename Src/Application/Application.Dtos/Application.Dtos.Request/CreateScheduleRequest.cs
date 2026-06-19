@@ -8,6 +8,6 @@
 
         public TimeOnly EndTime { get; set; }
 
-        public Guid Id_Class { get; set; }
+
     }
 }

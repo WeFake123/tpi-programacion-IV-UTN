@@ -5,10 +5,13 @@ namespace Domain.Interface
     {
 
         Task<List<Schedule>> GetAll();
-        Task<Schedule?> GetById(int id);
+        Task<Schedule?> GetById(Guid id);
         Task<Schedule> Create(Schedule schedule);
-        Task<bool> Update(int id, Schedule schedule);
-        Task<bool> Delete(int id);
+        Task<bool> Update(Guid id, Schedule schedule);
+        Task<bool> Delete(Guid id);
+
+        Task Save();
+
 
     }
 }

@@ -9,5 +9,7 @@
         public int Max_Users { get; set; }
 
         public List<ScheduleResponse> Schedules { get; set; } = new();
+
+    
     }
 }
