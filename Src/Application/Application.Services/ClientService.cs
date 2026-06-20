@@ -7,14 +7,18 @@ namespace Application.Services
 {
     public class ClientService : UserService, IClientService
     {
-        public ClientService(IUserRepository repo, IPasswordHasherService hasher, IUserContext userContext)
-            : base(repo, hasher, userContext)
+        private readonly IUserRepository _userRepo;
+        //private readonly IPlanRepository _planRepo;
+        public ClientService(IUserRepository userRepo, IPasswordHasherService hasher, IUserContext userContext, IPlanRepository planRepo)
+            : base(userRepo, hasher, userContext)
         {
+            _userRepo = userRepo;
+            //_planRepo = planRepo;
         }
 
         public new async Task Update(Guid id, User updatedUser)
         {
-            var user = await _repo.GetById(id);
+            var user = await _userRepo.GetById(id);
 
             if (user == null)
                 throw new NotFoundException("User not found");
@@ -30,5 +34,32 @@ namespace Application.Services
             await _repo.Update(user);
             await _repo.Save();
         }
+        //public async Task<Client?> SubscribeToPlan(SubscribePlanRequest request)
+        //{
+        //    var client =
+        //        await _userRepo.GetById(request.ClientId)
+        //        as Client;
+
+        //    if (client == null)
+        //        throw new NotFoundException("Client not found");
+
+        //    var plan =
+        //        await _planRepo.GetById(request.PlanId);
+
+        //    if (plan == null)
+        //        throw new NotFoundException("Plan not found");
+
+        //    client.Id_Plan = plan.Id;
+        //    client.SubscriptionStartDate = DateTime.UtcNow;
+        //    client.SubscriptionEndDate =
+        //        DateTime.UtcNow.AddMonths(1);
+
+        //    client.SubscriptionActive = true;
+
+        //    await _userRepo.Update(client);
+        //    await _userRepo.Save();
+
+        //    return client;
+        //}
     }
 }
