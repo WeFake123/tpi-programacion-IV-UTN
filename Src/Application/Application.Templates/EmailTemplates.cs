@@ -45,20 +45,6 @@
 
             <p>Este enlace expirará en 15 minutos.</p>";
         }
-            Riesgos de un proyecto
-            roles scrum
-            historia de usuario 
-            resposabulidades product owner
-            que es un sprint
-            todo scrum
-            cuales son los procesos que pertenecen a coso de riegos
-            smart
-
-            como hacer el diagrama
-            camino critico y durecaion de proyecto
-            formula del pert
-
-
         public static string SubscriptionExpiring(
             string userName,
             DateTime expirationDate,
