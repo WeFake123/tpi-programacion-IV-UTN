@@ -6,7 +6,7 @@ namespace Domain.Entity
 {
     public class Client : User
     {
-        public Guid Id_Plan { get; set; }
+        public Guid? Id_Plan { get; set; }
 
     }
 }

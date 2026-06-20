@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Presentation.Authorization;
+using Presentation.Middlewares;
 using System.Text;
 using Trabajop4.Infrastructure;
 
@@ -54,6 +56,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ISysAdminRepository, SysAdminRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 builder.Services.AddScoped<IPlanRepository, PlanRepository>();
@@ -93,6 +96,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.SoloAdmin, policy => policy.RequireRole("Admin"));
+    options.AddPolicy(Policies.SoloClient, policy => policy.RequireRole("Client"));
+    options.AddPolicy(Policies.SoloSysAdmin, policy => policy.RequireRole("SysAdmin"));
+    options.AddPolicy(Policies.AdminOSysAdmin, policy => policy.RequireRole("Admin", "SysAdmin"));
+});
+
 
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
@@ -128,8 +139,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-
 //app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -73,6 +73,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsUnlimited")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Max_Class")
                         .HasColumnType("int");
 
@@ -174,7 +177,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entity.User");
 
-                    b.Property<Guid>("Id_Plan")
+                    b.Property<Guid?>("Id_Plan")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasDiscriminator().HasValue("Client");

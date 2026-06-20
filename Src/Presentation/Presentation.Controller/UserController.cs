@@ -1,16 +1,12 @@
-using Application.Application.Dtos.Application.Dtos.Request;
 using Application.Dtos.Request;
-using Application.Dtos.Requests;
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Domain.Entity;
-using Infraestructure.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 
 namespace Presentation.Controller
-
-//Agregar cambiar contraseña por mail
 {
     [ApiController]
     // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos
@@ -26,38 +22,31 @@ namespace Presentation.Controller
             _authService = authService;
         }
 
-
         [AllowAnonymous]
         [HttpPost("singin")]
-        public async Task<ActionResult<SingInResponse>> SingIn([FromBody] SingInRequest request)
+        public async Task<ActionResult<SingInResponse>> SingIn(
+            [FromBody] SingInRequest request)
         {
             var response = await _authService.SingIn(request);
-
-            if (response == null)
-                return Unauthorized("Credenciales incorrectas.");
 
             return Ok(response);
         }
 
         [AllowAnonymous]
         [HttpPost("signup")]
-        public async Task<ActionResult<SingUpResponse>> SingUp([FromBody] SingUpRequest request)
+        public async Task<ActionResult<SingUpResponse>> SingUp(
+            [FromBody] SingUpRequest request)
         {
             var response = await _authService.SingUp(request);
 
-            if (response == null)
-                return Unauthorized("Credenciales incorrectas.");
-
             return Ok(response);
         }
+
         [AllowAnonymous]
         [HttpGet("verify-email")]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
-            var result = await _authService.VerifyEmail(token);
-
-            if (!result)
-                return BadRequest("Token inválido.");
+            await _authService.VerifyEmail(token);
 
             return Ok("Email verificado correctamente.");
         }
@@ -65,89 +54,97 @@ namespace Presentation.Controller
         [AllowAnonymous]
         [HttpPost("resend-verification")]
         public async Task<IActionResult> ResendVerification(
-        [FromBody] ResendVerificationRequest request)
+            [FromBody] ResendVerificationRequest request)
         {
-            var result = await _authService
-                .ResendVerificationEmail(request.Email);
-
-            if (!result)
-                return BadRequest("Usuario no encontrado o ya verificado.");
+            await _authService.ResendVerificationEmail(request.Email);
 
             return Ok("Correo de verificacion enviado.");
         }
 
-        //[AllowAnonymous]
-        //[HttpGet]
-        //public virtual async Task<ActionResult<IEnumerable<T>>> Get()
-        //{
-        //    var users = await _service.GetAll();
-        //    // Filtramos para devolver solo el tipo específico (Client, Admin, etc.)
-        //    return Ok(users.OfType<T>());
-        //}
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(
+            [FromBody] ForgotPasswordRequest request)
+        {
+            await _authService.ForgotPassword(request.Email);
 
+            return Ok("Se envio el correo de recuperacion.");
+        }
 
-        //[Authorize]
-        //[HttpPut("me")]
-        //public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
-        //{
-        //    var result = await _service.UpdateUser(request);
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordRequest request)
+        {
+            await _authService.ResetPassword(request.Token, request.NewPassword);
 
-        //    if (result == null)
-        //        return BadRequest();
+            return Ok("Contraseña actualizada correctamente.");
+        }
 
-        //    return Ok(result);
-        //}
-        //[Authorize]
-        //[HttpGet("claims")]
-        //public IActionResult Claims()
-        //{
-        //    return Ok(User.Claims.Select(c => new
-        //    {
-        //        c.Type,
-        //        c.Value
-        //    }));
-        //}
+        [AllowAnonymous]
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
+        [HttpGet]
+        public virtual async Task<ActionResult<IEnumerable<T>>> Get()
+        {
+            var users = await _service.GetAll();
+            // Filtramos para devolver solo el tipo específico (Client, Admin, etc.)
+            return Ok(users.OfType<T>());
+        }
 
-        //[Authorize]
-        //[HttpGet("{id}")]
-        //public virtual async Task<ActionResult<T>> GetById(Guid id)
-        //{
-        //    var user = await _service.GetById(id);
-        //    if (user is not T typedUser) return NotFound();
+        //para que el usuario pueda actualizar su perfil, sin necesidad de ser admin
+        [Authorize]
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
+        {
+            var result = await _service.UpdateUser(request);
 
-        //    return Ok(typedUser);
-        //}
+            return Ok(result);
+        }
 
-        //[AllowAnonymous]
-        //[HttpPost]
-        //public virtual async Task<ActionResult<T>> Post(T user)
-        //{
-        //    if (user == null) return BadRequest();
+        [Authorize]
+        [HttpGet("claims")]
+        public IActionResult Claims()
+        {
+            return Ok(User.Claims.Select(c => new
+            {
+                c.Type,
+                c.Value
+            }));
+        }
 
-        //    // La validación básica se mantiene
-        //    if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Email))
-        //        return BadRequest("Name and Email are required.");
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
+        [HttpGet("{id}")]
+        public virtual async Task<ActionResult<T>> GetById(Guid id)
+        {
+            var user = await _service.GetById(id);
+            return Ok(user);
+        }
 
-        //    var created = await _service.Create(user);
-        //    return CreatedAtAction(nameof(GetById), new { id = created.Id }, (T)created);
-        //}
-        //[Authorize]
-        //[HttpPatch("{id}")]
-        //public virtual async Task<IActionResult> Patch(Guid id, T user)
-        //{
-        //    var updated = await _service.Update(id, user);
-        //    if (!updated) return NotFound();
+        [AllowAnonymous]
+        [HttpPost]
+        public virtual async Task<ActionResult<T>> Post(T user)
+        {
+            var created = await _service.Create(user);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, (T)created);
+        }
 
-        //    return NoContent();
-        //}
-        //[Authorize]
-        //[HttpDelete("{id}")]
-        //public virtual async Task<IActionResult> Delete(Guid id)
-        //{
-        //    var deleted = await _service.Delete(id);
-        //    if (!deleted) return NotFound();
+        //para admin manejar un usuario
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
+        [HttpPatch("{id}")]
+        public virtual async Task<IActionResult> Patch(Guid id, T user)
+        {
+            await _service.Update(id, user);
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
+
+        [Authorize(Policy = Policies.AdminOSysAdmin)]
+        [HttpDelete("{id}")]
+        public virtual async Task<IActionResult> Delete(Guid id)
+        {
+            await _service.Delete(id);
+
+            return NoContent();
+        }
     }
 }

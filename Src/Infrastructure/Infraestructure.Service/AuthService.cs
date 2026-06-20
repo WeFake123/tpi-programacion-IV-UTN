@@ -1,5 +1,6 @@
-﻿using Application.Dtos.Requests;
+﻿using Application.Dtos.Request;
 using Application.Dtos.Responses;
+using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -36,13 +37,17 @@ namespace Infraestructure.Service
 
             string patron = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             if (!Regex.IsMatch(request.Email, patron))
-            { return null; }
-            ;
+            {
+                throw new ValidationException(
+                    "Invalid email format");
+            }
             var existingUser = await _context.Users
                 .FirstOrDefaultAsync(c => c.Email == request.Email);
             if (existingUser != null)
-                return null;
-
+            {
+                throw new ConflictException(
+                 "Invalid email format");
+            }
 
             var hashedPassword = _hasher.Hash(request.Password);
             var verificationToken = Guid.NewGuid().ToString();
@@ -86,18 +91,16 @@ namespace Infraestructure.Service
                 Email = newUser.Email
             };
         }
-
         public async Task<AuthResponse?> SingIn(SingInRequest request)
         {
             var cliente = await _context.Users
                 .FirstOrDefaultAsync(c => c.Email == request.Email);
-            Console.WriteLine(cliente);
 
             if (cliente == null)
-                return null;
+                throw new UnauthorizedException("Invalid email or password");
 
             if (!_hasher.Verify(request.Password, cliente.Password))
-                return null;
+                throw new UnauthorizedException("Invalid email or password");
 
             return new AuthResponse
             {
@@ -119,15 +122,15 @@ namespace Infraestructure.Service
                 .FirstOrDefaultAsync(u => u.VerificationToken == token);
             
             if (user == null)
-                return false;
+                throw new NotFoundException("Invalid verification token");
             if (user.VerificationTokenExpiration == null ||
                 user.VerificationTokenExpiration < DateTime.UtcNow)
             {
-                return false;
+                throw new UnauthorizedException("Verification token expired");
             }
             user.EmailVerified = true;
             user.VerificationToken = null;
-
+            user.VerificationTokenExpiration = null;
             await _context.SaveChangesAsync();
 
             return true;
@@ -139,10 +142,10 @@ namespace Infraestructure.Service
                 .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
-                return false;
+                throw new NotFoundException("Email not found");
 
             if (user.EmailVerified)
-                return false;
+                throw new ConflictException("Email is already verified");
 
             var verificationToken = Guid.NewGuid().ToString();
 
@@ -196,6 +199,126 @@ namespace Infraestructure.Service
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        private string GeneratePasswordResetToken(User user)
+        {
+            string key = _configuration["Jwt:Key"]!;
+            string issuer = _configuration["Jwt:Issuer"]!;
+            string audience = _configuration["Jwt:Audience"]!;
+
+            var securityKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(key));
+
+            var credentials =
+                new SigningCredentials(
+                    securityKey,
+                    SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    user.Id.ToString()),
+
+                new Claim(
+                    "purpose",
+                    "reset-password")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer,
+                audience,
+                claims,
+                expires: DateTime.UtcNow.AddMinutes(15),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler()
+                .WriteToken(token);
+        }
+        public async Task<bool> ForgotPassword(string email)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                throw new NotFoundException("Email not found");
+
+            var token = GeneratePasswordResetToken(user);
+
+            var resetLink =
+                $"https://localhost:7001/reset-password?token={token}";
+
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "Recuperar contraseña",
+                $@"
+                <h2>Recuperacion de contraseña</h2>
+                <p>Hace click en el siguiente enlace:</p>
+                <a href='{resetLink}'>Restablecer contraseña</a>");
+
+            return true;
+        }
+
+        public async Task<bool> ResetPassword(string token, string newPassword)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(
+                    token,
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = _configuration["Jwt:Issuer"],
+
+                        ValidateAudience = true,
+                        ValidAudience = _configuration["Jwt:Audience"],
+
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(
+                                    _configuration["Jwt:Key"]!))
+                    },
+                    out SecurityToken validatedToken);
+
+                var userId =
+                    principal.FindFirst(
+                        ClaimTypes.NameIdentifier)?.Value;
+
+                var purpose =
+                    principal.FindFirst("purpose")?.Value;
+
+                if (purpose != "reset-password")
+                    throw new UnauthorizedException("Invalid token");
+
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(
+                        u => u.Id == Guid.Parse(userId!));
+
+                if (user == null)
+                    throw new NotFoundException("User not found");
+
+                user.Password =
+                    _hasher.Hash(newPassword);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                throw new UnauthorizedException("The token has expired");
+            }
+            catch (SecurityTokenException)
+            {
+                throw new UnauthorizedException("Invalid token");
+            }
         }
     }
 }
