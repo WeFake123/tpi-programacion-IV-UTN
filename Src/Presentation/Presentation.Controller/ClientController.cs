@@ -1,28 +1,56 @@
 ﻿using Application.Interfaces;
 using Domain.Entity;
+using Domain.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Authorization;
 using Presentation.Controller;
+using System.Security.Claims;
 
 namespace Presentation.Presentation.Controller
 {
-    [Authorize(Policy = Policies.AdminOSysAdmin)]
     public class ClientController : UsersController<Client>
     {
-        private readonly IClientService _clientService;
+        private readonly IPlanRepository _planRepo;
+        private readonly IMercadoPagoService _mercadoPagoService;
 
-        public ClientController(IClientService service, IAuthService authService)
-            : base(service, authService)
+        public ClientController(
+            IUserService service,
+            IAuthService authService,
+            IMercadoPagoService mercadoPagoService,
+            IPlanRepository planRepo) : base(service, authService)
         {
-            _clientService = service;
+            _planRepo = planRepo;
+            _mercadoPagoService = mercadoPagoService;
         }
 
-        [HttpPatch("{id}")]
-        public override async Task<IActionResult> Patch(Guid id, Client user)
+        [HttpPost("webhook/mercadopago")]
+        public async Task<IActionResult> Webhook(
+            [FromQuery] string? topic,
+            [FromQuery] string? type,
+            [FromQuery] string? id)
         {
-            await _clientService.Update(id, user);
-            return NoContent();
+            var eventType = topic ?? type;
+
+            if (eventType != "payment")
+                return Ok();
+
+            if (string.IsNullOrEmpty(id))
+                return Ok();
+
+            await _mercadoPagoService.ProcessPayment(id);
+
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("BuyPlan")]
+        public async Task<IActionResult> CreatePayment(Guid planId)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var plan = await _planRepo.GetById(planId);
+            var initPoint = await _mercadoPagoService.CreatePreference(plan, userId);
+
+            return Ok(new { PaymentUrl = initPoint });
         }
     }
 }

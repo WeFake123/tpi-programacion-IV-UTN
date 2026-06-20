@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Trabajop4.Infrastructure;
 
@@ -11,9 +12,11 @@ using Trabajop4.Infrastructure;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619235847_UpdateClientPlan")]
+    partial class UpdateClientPlan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,9 +75,6 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsUnlimited")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Max_Class")
                         .HasColumnType("int");
@@ -177,7 +177,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entity.User");
 
-                    b.Property<Guid?>("Id_Plan")
+                    b.Property<Guid>("Id_Plan")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasDiscriminator().HasValue("Client");
