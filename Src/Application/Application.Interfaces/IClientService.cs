@@ -7,9 +7,7 @@ namespace Application.Interfaces
     public interface IClientService : IUserService
     {
         Task UpdatePlan(Guid planId, Guid userId);
-        Task Update(Guid id, User updatedUser);
-        //Task<Client?> SubscribeToPlan(SubscribePlanRequest request);
-
-       // Task CheckExpiredSubscriptions();
+        //Task update(Guid id, User updatedUser);
+        Task<Client?> SubscribeToPlan(SubscribePlanRequest request);
     }
 }

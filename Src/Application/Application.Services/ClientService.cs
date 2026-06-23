@@ -8,13 +8,13 @@ namespace Application.Services
     public class ClientService : UserService, IClientService
     {
             private readonly IUserRepository _userRepo;
-            //private readonly IPlanRepository _planRepo;
-            public ClientService(IUserRepository userRepo, IPasswordHasherService hasher, IUserContext userContext)
+            private readonly IPlanRepository _planRepo;
+        public ClientService(IUserRepository userRepo, IPasswordHasherService hasher, IUserContext userContext, IPlanRepository planRepo)
             : base(userRepo, hasher, userContext)
         {
                 _userRepo = userRepo;
-                //_planRepo = planRepo;
-            }
+                _planRepo = planRepo;
+        }
 
             public async Task UpdatePlan(Guid planId, Guid userId)
         {
@@ -43,32 +43,31 @@ namespace Application.Services
             await _userRepo.Update(user);
             await _userRepo.Save();
         }
-            //public async Task<Client?> SubscribeToPlan(SubscribePlanRequest request)
-            //{
-            //    var client =
-            //        await _userRepo.GetById(request.ClientId)
-            //        as Client;
+        public async Task<Client?> SubscribeToPlan(SubscribePlanRequest request)
+        {
+            var client =
+                await _userRepo.GetById(request.ClientId)
+                as Client;
 
-            //    if (client == null)
-            //        throw new NotFoundException("Client not found");
+            if (client == null)
+                throw new NotFoundException("Client not found");
 
-            //    var plan =
-            //        await _planRepo.GetById(request.PlanId);
+            var plan =
+                await _planRepo.GetById(request.PlanId);
 
-            //    if (plan == null)
-            //        throw new NotFoundException("Plan not found");
+            if (plan == null)
+                throw new NotFoundException("Plan not found");
 
-            //    client.Id_Plan = plan.Id;
-            //    client.SubscriptionStartDate = DateTime.UtcNow;
-            //    client.SubscriptionEndDate =
-            //        DateTime.UtcNow.AddMonths(1);
+            client.Id_Plan = plan.Id;
+            client.SubscriptionStartDate = DateTime.UtcNow;
+            client.SubscriptionEndDate = DateTime.UtcNow.AddMonths(1);
 
-            //    client.SubscriptionActive = true;
+            client.IsActive = true;
 
-            //    await _userRepo.Update(client);
-            //    await _userRepo.Save();
+            await _userRepo.Update(client);
+            await _userRepo.Save();
 
-            //    return client;
-            //}
+            return client;
         }
+    }
     }

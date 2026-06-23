@@ -14,7 +14,7 @@ using Trabajop4.Infrastructure;
 using Application.Templates;
 using Application.Constants;
 
-namespace Infraestructure.Service
+namespace Infrastructure.Service
 {
     public class AuthService : IAuthService
     {

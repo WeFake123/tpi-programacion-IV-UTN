@@ -69,10 +69,13 @@ namespace Application.Services
             if (activeCount >= gymClass.Max_Users)
                 return new InscriptionResult { Success = false, ErrorMessage = "La clase no tiene cupos disponibles." };
 
-            // 6. Validar que el cliente tiene plan
+            // 6. Validar que el cliente tuvo plan
             if (client.Id_Plan == null)
-                return new InscriptionResult { Success = false, ErrorMessage = "El cliente no tiene un plan activo." };
-
+                return new InscriptionResult { Success = false, ErrorMessage = "El cliente nunca tuvo un plan." };
+            
+            if (!client.IsActive)
+                return new InscriptionResult { Success = false, ErrorMessage ="El cliente no tiene una suscripcion activa." };
+            
             // 7. Validar límite del plan
             var plan = await _planRepo.GetById(client.Id_Plan.Value);
             if (plan == null)
