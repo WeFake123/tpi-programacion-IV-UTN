@@ -9,10 +9,13 @@ using Infrastructure.Repository;
 using Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Polly;
 using Presentation.Authorization;
 using Presentation.Middlewares;
+using System.Net.Http.Headers;
 using System.Text;
 using Trabajop4.Infrastructure;
 
@@ -111,12 +114,35 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
-builder.Services.AddHttpClient<IMercadoPagoService,
-    MercadoPagoService>(client =>
+builder.Services.AddHttpClient<IMercadoPagoService, MercadoPagoService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.mercadopago.com/");
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+})
+.AddResilienceHandler("mercadopago", builder =>
+{
+    // Retry (3 intentos, backoff exponencial)
+    builder.AddRetry(new HttpRetryStrategyOptions
     {
-        client.BaseAddress =
-            new Uri("https://api.mercadopago.com/");
+        MaxRetryAttempts = 3,
+        Delay = TimeSpan.FromSeconds(2),
+        BackoffType = DelayBackoffType.Exponential,
+        UseJitter = true
     });
+
+    // Circuit Breaker
+    builder.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+    {
+        SamplingDuration = TimeSpan.FromSeconds(30),
+        FailureRatio = 0.1,           // 10% de fallos abre el circuito
+        MinimumThroughput = 100,      // mínimo 100 requests para evaluar
+        BreakDuration = TimeSpan.FromSeconds(5)
+    });
+
+    // Timeout por intento
+    builder.AddTimeout(TimeSpan.FromSeconds(30));
+});
 
 
 
