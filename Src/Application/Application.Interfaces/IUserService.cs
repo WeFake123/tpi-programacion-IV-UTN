@@ -1,8 +1,4 @@
-﻿
-using Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Entity;
 using Application.Dtos.Request;
 
 namespace Application.Interfaces
@@ -14,7 +10,7 @@ namespace Application.Interfaces
         Task<User?> GetById(Guid id);
         Task<User?> GetByEmail(string email);
         Task<User> Create(User user);
-        Task<bool> Update(Guid id, User user);
-        Task<bool> Delete(Guid id);
+        Task Update(Guid id, User user);
+        Task Delete(Guid id);
     }
 }

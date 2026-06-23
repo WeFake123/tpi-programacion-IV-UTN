@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Dtos.Requests
+namespace Application.Dtos.Request
 {
     public class SingUpRequest
     {

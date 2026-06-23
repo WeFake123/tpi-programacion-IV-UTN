@@ -1,5 +1,5 @@
 ﻿using Application.Dtos.Responses;
-using Application.Dtos.Requests;
+using Application.Dtos.Request;
 namespace Application.Interfaces
 {
     public interface IAuthService
@@ -11,5 +11,11 @@ namespace Application.Interfaces
 
         Task<bool> VerifyEmail(string token);
         Task<bool> ResendVerificationEmail(string email);
+
+        Task<bool> ForgotPassword(string email);
+
+        Task<bool> ResetPassword(
+            string token,
+            string newPassword);
     }
 }

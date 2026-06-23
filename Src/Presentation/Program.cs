@@ -1,3 +1,4 @@
+using Application.Application.Interfaces;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Interface;
@@ -10,8 +11,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Presentation.Authorization;
+using Presentation.Middlewares;
 using System.Text;
 using Trabajop4.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +58,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ISysAdminRepository, SysAdminRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<ISysAdminService, SysAdminService>();
 builder.Services.AddScoped<IPlanRepository, PlanRepository>();
@@ -70,12 +75,14 @@ builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IInscriptionService, InscriptionService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 //Servicios de utilidad
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ISubscriptionService,SubscriptionService>();
 
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -93,8 +100,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.SoloAdmin, policy => policy.RequireRole("Admin"));
+    options.AddPolicy(Policies.SoloClient, policy => policy.RequireRole("Client"));
+    options.AddPolicy(Policies.SoloSysAdmin, policy => policy.RequireRole("SysAdmin"));
+    options.AddPolicy(Policies.AdminOSysAdmin, policy => policy.RequireRole("Admin", "SysAdmin"));
+});
+
 
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+
+builder.Services.AddHttpClient<IMercadoPagoService,
+    MercadoPagoService>(client =>
+    {
+        client.BaseAddress =
+            new Uri("https://api.mercadopago.com/");
+    });
+
 
 
 
@@ -120,7 +143,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

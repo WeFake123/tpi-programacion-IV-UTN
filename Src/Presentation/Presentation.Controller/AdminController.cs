@@ -1,17 +1,16 @@
-﻿using Application.Dtos.Request;
-using Application.Dtos.Request.Admin;
+﻿using Application.Dtos.Request.Admin;
 using Application.Interfaces;
-using Application.Services;
-using Azure.Core;
+using Application.Mapper;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Authorization;
 using Presentation.Controller;
 
 namespace Presentation.Presentation.Controller
 {
 
-
+    [Authorize(Policy = Policies.AdminOSysAdmin)]
     public class AdminController : UsersController<Admin>
     {
 
@@ -30,15 +29,11 @@ namespace Presentation.Presentation.Controller
 
         // -------------PLAN controller --------------------
 
-        [Authorize]
+        
         [HttpPost("UpdatePlan")]
         public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
             var result = await _AdminService.UpdatePlan(id, request);
-            if (result == null)
-            {
-                return BadRequest("Datos incorrectos");
-            }
             return Ok(new
             {
                 Message = "Clase creada correctamente",
@@ -46,15 +41,11 @@ namespace Presentation.Presentation.Controller
             });
         }
 
-        [Authorize]
+        
         [HttpPost("CreatePlan")]
         public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
         {
             var result = await _AdminService.CreatePlan(request);
-            if (result == null)
-            {
-              return BadRequest("Datos incorrectos");
-          }
             return Ok(new
            {
                Message = "Clase creada correctamente",
@@ -62,40 +53,28 @@ namespace Presentation.Presentation.Controller
            });
         }
 
-        [Authorize]
+        
         [HttpPost("DeletePlan")]
         public async Task<ActionResult> DeletePlan(Guid id)
         {
             var result = await _AdminService.DeletePlan(id);
-            if (result == null)
-            {
-                return NotFound("Plan no encontrado");
-            }
             return Ok(result);
         }
 
-        [Authorize]
+        
         [HttpGet("GetPlan")]
         public async Task<ActionResult<IEnumerable<Plan>>> GetPlan()
         {
             var result = await _AdminService.GetPlan();
-            if (result == null)
-            {
-                return NotFound("Planes no encontrados");
-            }
             return Ok(result);
         }
 
         //-----------------Schedule Controller ----------------------------
-        [Authorize]
+       
         [HttpPost("DeleteSchedule")]
         public async Task<ActionResult> DeleteSchedule(Guid id)
         {
             var result = await _AdminService.DeleteSchedule(id);
-            if (result == null)
-            {
-                return NotFound("Horario no encontrado");
-            }
             return Ok(result);
         }
 
@@ -103,17 +82,11 @@ namespace Presentation.Presentation.Controller
         //-------------------- Class controler-----------------------------
 
 
-        [Authorize]
+        
         [HttpPost("CreteClass")]
         public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
-
         {
-
             var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
-            if (result == null)
-            {
-                return BadRequest("Datos incorrectos");
-            }
 
             return Ok(new
             {
@@ -123,43 +96,46 @@ namespace Presentation.Presentation.Controller
 
         }
 
-        [Authorize]
+        
         [HttpGet("getClass")]
         public async Task<ActionResult> GetClass()
         {
             var result = await _AdminService.GetClass();
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
+            return Ok(result.Select(c => c.ToClassResponse()));
+        }
 
+        [HttpGet("getClassDetail/{id}")]
+        public async Task<ActionResult> GetClassDetail(Guid id)
+        {
+            var result = await _AdminService.GetClassDetail(id);
             return Ok(result);
         }
 
-        [Authorize]
+
         [HttpPut("updateClass/{id}")]
         public async Task<ActionResult> UpdateClass(Guid id, [FromBody] CreateClassWithSchedulesRequest request)
         {
 
             var result = await _AdminService.UpdateClass(id, request.ClassRequest, request.ScheduleRequests);
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
 
-            return Ok(result);
+            return Ok(result.Select(c => c.ToClassResponse()));
         }
 
-        [Authorize]
+       
         [HttpDelete("deleteClass/{id}")]
         public async Task<ActionResult<IEnumerable<Class?>>> DeleteClass(Guid id)
         {
             var result = await _AdminService.DeleteClass(id);
-            if (result == null)
-            {
-                return NotFound("Clase no encontrada");
-            }
 
+            return Ok(result.Select(c => c.ToClassResponse()));
+        }
+
+        //-------------------- Client Inscriptions-----------------------------
+
+        [HttpGet("clientInscriptions/{clientId}")]
+        public async Task<ActionResult> GetClientInscriptions(Guid clientId)
+        {
+            var result = await _AdminService.GetClientInscriptions(clientId);
             return Ok(result);
         }
     }

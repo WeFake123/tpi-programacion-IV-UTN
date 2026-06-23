@@ -1,0 +1,17 @@
+{
+
+  "Jwt": {
+    "Key": "tu_clave_super_secreta_de_32_caracteres",
+    "Issuer": "GymApi",
+    "Audience": "GymApiUsers",
+    "ExpirationMinutes": 60
+  },
+
+  "EmailSettings": {
+    "SmtpServer": "smtp.gmail.com",
+    "Port": 587,
+    "SenderName": "Gym",
+    "SenderEmail": "tuemail@gmail.com",
+    "Password": "tu_password"
+  }
+}
