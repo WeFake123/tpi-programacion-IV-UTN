@@ -5,8 +5,6 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using System;
-using System.IO;
 
 public class EmailService : IEmailService
 {
@@ -21,7 +19,7 @@ public class EmailService : IEmailService
         var email = new MimeMessage();
 
         email.From.Add(
-            MailboxAddress.Parse("tugym@gmail.com"));
+            MailboxAddress.Parse("Gymtupproject@gmail.com"));
 
         email.To.Add(
             MailboxAddress.Parse(to));

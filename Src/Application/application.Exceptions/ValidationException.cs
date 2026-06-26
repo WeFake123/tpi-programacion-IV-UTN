@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Application.Exceptions;
 
-namespace Application.application.Exceptions
+public class ValidationException : Exception
 {
-    internal class ValidationException
+    public ValidationException(string message)
+        : base(message)
     {
     }
-}
+}//USAR PARA DATOS INVALIDOS, COMO POR EJEMPLO UN USUARIO QUE YA EXISTE O UN CORREO QUE YA ESTA REGISTRADO 400

@@ -1,5 +1,5 @@
 ﻿using Application.Dtos.Responses;
-using Application.Dtos.Requests;
+using Application.Dtos.Request;
 namespace Application.Interfaces
 {
     public interface IAuthService

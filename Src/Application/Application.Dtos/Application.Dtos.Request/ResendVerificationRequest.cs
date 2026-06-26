@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Application.Dtos.Application.Dtos.Request
+namespace Application.Dtos.Request
 { 
     public class ResendVerificationRequest
     {
