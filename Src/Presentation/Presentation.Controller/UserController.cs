@@ -81,7 +81,7 @@ namespace Presentation.Controller
             return Ok("Contraseña actualizada correctamente.");
         }
 
-        [AllowAnonymous]
+        
         [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<T>>> Get()

@@ -30,13 +30,13 @@ namespace Presentation.Presentation.Controller
         // -------------PLAN controller --------------------
 
         
-        [HttpPost("UpdatePlan")]
+        [HttpPut("UpdatePlan")]
         public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
             var result = await _AdminService.UpdatePlan(id, request);
             return Ok(new
             {
-                Message = "Clase creada correctamente",
+                Message = "Clase actualizada correctamente",
                 Class = result?.Name
             });
         }
@@ -54,7 +54,7 @@ namespace Presentation.Presentation.Controller
         }
 
         
-        [HttpPost("DeletePlan")]
+        [HttpDelete("DeletePlan")]
         public async Task<ActionResult> DeletePlan(Guid id)
         {
             var result = await _AdminService.DeletePlan(id);
@@ -69,14 +69,6 @@ namespace Presentation.Presentation.Controller
             return Ok(result);
         }
 
-        //-----------------Schedule Controller ----------------------------
-       
-        [HttpPost("DeleteSchedule")]
-        public async Task<ActionResult> DeleteSchedule(Guid id)
-        {
-            var result = await _AdminService.DeleteSchedule(id);
-            return Ok(result);
-        }
 
 
         //-------------------- Class controler-----------------------------
@@ -96,13 +88,6 @@ namespace Presentation.Presentation.Controller
 
         }
 
-        
-        [HttpGet("getClass")]
-        public async Task<ActionResult> GetClass()
-        {
-            var result = await _AdminService.GetClass();
-            return Ok(result.Select(c => c.ToClassResponse()));
-        }
 
         [HttpGet("getClassDetail/{id}")]
         public async Task<ActionResult> GetClassDetail(Guid id)
@@ -121,14 +106,6 @@ namespace Presentation.Presentation.Controller
             return Ok(result.Select(c => c.ToClassResponse()));
         }
 
-       
-        [HttpDelete("deleteClass/{id}")]
-        public async Task<ActionResult<IEnumerable<Class?>>> DeleteClass(Guid id)
-        {
-            var result = await _AdminService.DeleteClass(id);
-
-            return Ok(result.Select(c => c.ToClassResponse()));
-        }
 
         //-------------------- Client Inscriptions-----------------------------
 
