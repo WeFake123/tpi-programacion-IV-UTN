@@ -151,11 +151,8 @@ builder.Services.AddHttpClient<IMercadoPagoService, MercadoPagoService>(client =
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Sembrar la base de datos con un usuario sysadmin por defecto
 
