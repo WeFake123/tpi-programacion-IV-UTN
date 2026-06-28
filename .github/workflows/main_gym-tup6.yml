@@ -26,6 +26,7 @@ jobs:
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -46,7 +47,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_306665FA857143EA84DA1018613BC7A6 }}
 
       - name: Set App Settings in Azure
-        uses: azure/cli@v2
+        shell: pwsh
         env:
           JWT_KEY: ${{ secrets.JWT_KEY }}
           SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
@@ -55,20 +56,18 @@ jobs:
           MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
           MERCADOPAGO_NOTIFICATION_URL: ${{ secrets.MERCADOPAGO_NOTIFICATION_URL }}
           APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az webapp config appsettings set \
-              --name Gym-tup6 \
-              --resource-group ProyectoGymTup6 \
-              --settings \
-                "Jwt__Key=$JWT_KEY" \
-                "SeedAdmin__Password=$SEED_ADMIN_PASSWORD" \
-                "EmailSettings__Password=$EMAIL_PASSWORD" \
-                "ConnectionStrings__DefaultConnection=$CONNECTION_STRING" \
-                "MercadoPago__AccessToken=$MERCADOPAGO_ACCESS_TOKEN" \
-                "MercadoPago__NotificationUrl=$MERCADOPAGO_NOTIFICATION_URL" \
-                "AppSettings__BaseUrl=$APP_BASE_URL"
+        run: |
+          az webapp config appsettings set `
+            --name Gym-tup6 `
+            --resource-group ProyectoGymTup6 `
+            --settings `
+              "Jwt__Key=$env:JWT_KEY" `
+              "SeedAdmin__Password=$env:SEED_ADMIN_PASSWORD" `
+              "EmailSettings__Password=$env:EMAIL_PASSWORD" `
+              "ConnectionStrings__DefaultConnection=$env:CONNECTION_STRING" `
+              "MercadoPago__AccessToken=$env:MERCADOPAGO_ACCESS_TOKEN" `
+              "MercadoPago__NotificationUrl=$env:MERCADOPAGO_NOTIFICATION_URL" `
+              "AppSettings__BaseUrl=$env:APP_BASE_URL"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
