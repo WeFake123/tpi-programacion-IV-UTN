@@ -1,5 +1,4 @@
 ﻿using Application.Dtos.Request;
-using Application.Dtos.Responses;
 using Application.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
@@ -14,12 +13,10 @@ namespace Presentation.Presentation.Controller
     public class ClassController : ControllerBase
     {
         private readonly IClassService _service;
-        private readonly IEmailService _emailService;
 
         public ClassController(IClassService service, IEmailService emailService)
         {
             _service = service;
-            _emailService = emailService;
         }
 
         [AllowAnonymous]
