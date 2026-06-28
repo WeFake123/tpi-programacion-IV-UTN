@@ -75,7 +75,7 @@ namespace Presentation.Presentation.Controller
 
 
         
-        [HttpPost("CreteClass")]
+        [HttpPost("CreateClass")]
         public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
         {
             var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
