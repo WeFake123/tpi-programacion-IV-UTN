@@ -26,6 +26,7 @@ jobs:
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -46,18 +47,25 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_306665FA857143EA84DA1018613BC7A6 }}
 
       - name: Set App Settings in Azure
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: 'Gym-tup6'
-          app-settings-json: |
-            [
-              { "name": "Jwt__Key",                             "value": "${{ secrets.JWT_KEY }}",                      "slotSetting": false },
-              { "name": "SeedAdmin__Password",                  "value": "${{ secrets.SEED_ADMIN_PASSWORD }}",          "slotSetting": false },
-              { "name": "EmailSettings__Password",              "value": "${{ secrets.EMAIL_PASSWORD }}",               "slotSetting": false },
-              { "name": "ConnectionStrings__DefaultConnection", "value": "${{ secrets.CONNECTION_STRING }}",            "slotSetting": false },
-              { "name": "MercadoPago__AccessToken",             "value": "${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}",     "slotSetting": false },
-              { "name": "MercadoPago__NotificationUrl",         "value": "${{ secrets.MERCADOPAGO_NOTIFICATION_URL }}", "slotSetting": false }
-            ]
+        shell: pwsh
+        env:
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+          MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
+          MERCADOPAGO_NOTIFICATION_URL: ${{ secrets.MERCADOPAGO_NOTIFICATION_URL }}
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+        run: |
+          $appName = "Gym-tup6"
+          $rg = "ProyectoGymTup6"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "Jwt__Key=$env:JWT_KEY"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "SeedAdmin__Password=$env:SEED_ADMIN_PASSWORD"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "EmailSettings__Password=$env:EMAIL_PASSWORD"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "ConnectionStrings__DefaultConnection=$env:CONNECTION_STRING"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "MercadoPago__AccessToken=$env:MERCADOPAGO_ACCESS_TOKEN"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "MercadoPago__NotificationUrl=$env:MERCADOPAGO_NOTIFICATION_URL"
+          az webapp config appsettings set --name $appName --resource-group $rg --settings "AppSettings__BaseUrl=$env:APP_BASE_URL"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
