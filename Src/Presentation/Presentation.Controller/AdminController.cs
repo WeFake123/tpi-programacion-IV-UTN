@@ -1,4 +1,5 @@
 ﻿using Application.Dtos.Request.Admin;
+using Application.Dtos.Responses;
 using Application.Interfaces;
 using Application.Mapper;
 using Domain.Entity;
@@ -53,20 +54,22 @@ namespace Presentation.Presentation.Controller
            });
         }
 
-        
+
         [HttpDelete("DeletePlan")]
         public async Task<ActionResult> DeletePlan(Guid id)
         {
             var result = await _AdminService.DeletePlan(id);
-            return Ok(result);
+            if (result == null)
+                return NotFound("Plan no encontrado");
+            return Ok(result.ToPlanResponse());
         }
 
-        
+
         [HttpGet("GetPlan")]
-        public async Task<ActionResult<IEnumerable<Plan>>> GetPlan()
+        public async Task<ActionResult<IEnumerable<PlanResponse>>> GetPlan()
         {
             var result = await _AdminService.GetPlan();
-            return Ok(result);
+            return Ok(result.Select(p => p.ToPlanResponse()));
         }
 
 
@@ -74,8 +77,8 @@ namespace Presentation.Presentation.Controller
         //-------------------- Class controler-----------------------------
 
 
-        
-        [HttpPost("CreateClass")]
+
+        [HttpPost("CreteClass")]
         public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
         {
             var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
