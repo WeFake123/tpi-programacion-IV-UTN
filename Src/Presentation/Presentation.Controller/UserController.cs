@@ -23,7 +23,7 @@ namespace Presentation.Controller
         }
 
         [AllowAnonymous]
-        [HttpPost("singin")]
+        [HttpPost("signin")]
         public async Task<ActionResult<SingInResponse>> SingIn(
             [FromBody] SingInRequest request)
         {
@@ -74,9 +74,10 @@ namespace Presentation.Controller
         [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(
-            [FromBody] ResetPasswordRequest request)
+            [FromQuery] string token,
+            [FromBody] string NewPassword)
         {
-            await _authService.ResetPassword(request.Token, request.NewPassword);
+            await _authService.ResetPassword(token, NewPassword);
 
             return Ok("Contraseña actualizada correctamente.");
         }
