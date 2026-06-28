@@ -37,6 +37,7 @@ namespace Infrastructure.Service
         public async Task<AuthResponse?> SingUp(SingUpRequest request)
         {
 
+            var baseUrl = _configuration["AppSettings:BaseUrl"];
             string patron = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             if (!Regex.IsMatch(request.Email, patron))
             {
@@ -72,7 +73,7 @@ namespace Infrastructure.Service
 
             //MOdificar el link para que apunte a la ruta correcta en el frontend
 
-            var verificationLink = $"https://localhost:7001/api/clients/verify-email?token={verificationToken}";
+            var verificationLink = $"{baseUrl}/api/clients/verify-email?token={verificationToken}";
             await _emailService.SendEmailAsync(
                  newUser.Email,
                  EmailSubjects.VerifyEmail,
