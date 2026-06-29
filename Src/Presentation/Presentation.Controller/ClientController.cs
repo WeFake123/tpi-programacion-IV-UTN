@@ -15,9 +15,8 @@ namespace Presentation.Presentation.Controller
 
         public ClientController(
             IUserService service,
-            IAuthService authService,
             IMercadoPagoService mercadoPagoService,
-            IPlanRepository planRepo) : base(service, authService)
+            IPlanRepository planRepo) : base(service)
         {
             _planRepo = planRepo;
             _mercadoPagoService = mercadoPagoService;

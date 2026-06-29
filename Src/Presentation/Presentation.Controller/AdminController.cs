@@ -16,7 +16,7 @@ namespace Presentation.Presentation.Controller
     {
 
         private readonly IAdminService _AdminService;
-        public AdminController(IUserService service, IAuthService authService, IAdminService adminService) : base(service, authService)
+        public AdminController(IUserService service, IAdminService adminService) : base(service)
         {
             _AdminService = adminService;
         }
@@ -30,7 +30,7 @@ namespace Presentation.Presentation.Controller
 
         // -------------PLAN controller --------------------
 
-        
+
         [HttpPut("UpdatePlan")]
         public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
         {
@@ -42,16 +42,16 @@ namespace Presentation.Presentation.Controller
             });
         }
 
-        
+
         [HttpPost("CreatePlan")]
         public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
         {
             var result = await _AdminService.CreatePlan(request);
             return Ok(new
-           {
-               Message = "Clase creada correctamente",
+            {
+                Message = "Clase creada correctamente",
                 Class = result?.Name
-           });
+            });
         }
 
 

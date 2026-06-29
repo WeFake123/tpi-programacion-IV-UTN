@@ -1,7 +1,7 @@
 {
 
   "Jwt": {
-    "Key": "",
+    "Key": "clave-secreta-minimo-32-caracteres!!",
     "Issuer": "GymApi",
     "Audience": "GymApiUsers",
     "ExpirationMinutes": 60
@@ -12,6 +12,6 @@
     "Port": 587,
     "SenderName": "Gym",
     "SenderEmail": "tuemail@gmail.com",
-    "Password": ""
+    "Password": "muoiumcfcbtgtjzi"
   }
 }
