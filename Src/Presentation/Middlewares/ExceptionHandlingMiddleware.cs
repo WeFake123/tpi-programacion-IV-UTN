@@ -57,7 +57,7 @@ public class ExceptionHandlingMiddleware
 
             _ =>
                 (StatusCodes.Status500InternalServerError,
-                 exception.Message)
+                 "Ocurrio un error inesperado")
         };
 
         context.Response.ContentType = "application/json";
