@@ -5,6 +5,7 @@ using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
+using Application.Dtos.Responses;
 
 namespace Presentation.Controller
 {
@@ -14,9 +15,9 @@ namespace Presentation.Controller
     public abstract class UsersController<T> : ControllerBase where T : User
     {
         protected readonly IUserService _service;
-        
+        protected readonly IAuthService _authService;
 
-        public UsersController(IUserService service)
+        public UsersController(IUserService service, IAuthService authService)
         {
             _service = service;
             _authService = authService;
