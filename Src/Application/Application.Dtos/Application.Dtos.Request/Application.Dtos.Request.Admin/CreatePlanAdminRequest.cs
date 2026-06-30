@@ -4,9 +4,9 @@
     {
         public string Name { get; set; } = string.Empty;
 
-        public int Max_Users { get; set; }
+        public int Max_Clases { get; set; }
 
-        public float value { get; set; }
+        public float Value { get; set; }
 
     }
 }

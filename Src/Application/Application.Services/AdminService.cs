@@ -42,14 +42,14 @@ namespace Application.Services
 
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ValidationException("Plan name is required");
-            if (request.Max_Users < 0 || request.Max_Users > 100)
+            if (request.Max_Clases < 0 || request.Max_Clases > 100)
                 throw new ValidationException("Max classes must be between 0 and 100");
-            if (request.value <= 0)
+            if (request.Value <= 0)
                 throw new ValidationException("Plan value must be greater than zero");
 
             plan_id.Name = request.Name;
-            plan_id.Max_Class = request.Max_Users;
-            plan_id.Value = request.value;
+            plan_id.Max_Class = request.Max_Clases;
+            plan_id.Value = request.Value;
 
             await _planRepo.Update(plan_id);
             await _planRepo.Save();
@@ -66,17 +66,17 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ValidationException("Plan name is required");
 
-            if (request.value <= 0)
+            if (request.Value <= 0)
                 throw new ValidationException("Plan value must be greater than zero");
 
-            if (request.Max_Users < 0)
+            if (request.Max_Clases < 0)
                 throw new ValidationException("Max classes cannot be negative");
 
             var plan = new Plan
             {
                 Name = request.Name,
-                Max_Class = request.Max_Users,
-                Value = request.value
+                Max_Class = request.Max_Clases,
+                Value = request.Value
             };
 
 

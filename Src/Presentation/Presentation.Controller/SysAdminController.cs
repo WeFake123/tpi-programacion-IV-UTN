@@ -14,7 +14,7 @@ namespace Presentation.Presentation.Controller
     public class SysAdminController : UsersController<SysAdmin>
     {
         private readonly ISysAdminService _sysAdminService;
-        public SysAdminController(IUserService service, IAuthService authService, ISysAdminService sysAdminService) : base(service, authService)
+        public SysAdminController(IUserService service, ISysAdminService sysAdminService) : base(service)
         {
             _sysAdminService = sysAdminService;
 
