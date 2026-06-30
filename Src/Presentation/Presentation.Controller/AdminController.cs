@@ -31,83 +31,83 @@ namespace Presentation.Presentation.Controller
         // -------------PLAN controller --------------------
 
 
-        [HttpPut("UpdatePlan")]
-        public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
-        {
-            var result = await _AdminService.UpdatePlan(id, request);
-            return Ok(new
-            {
-                Message = "Clase actualizada correctamente",
-                Class = result?.Name
-            });
-        }
+        //[HttpPut("UpdatePlan")]
+        //public async Task<ActionResult> UpdatePlan(Guid id, CreatePlanAdminRequest request)
+        //{
+        //    var result = await _AdminService.UpdatePlan(id, request);
+        //    return Ok(new
+        //    {
+        //        Message = "Clase actualizada correctamente",
+        //        Class = result?.Name
+        //    });
+        //}
 
 
-        [HttpPost("CreatePlan")]
-        public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
-        {
-            var result = await _AdminService.CreatePlan(request);
-            return Ok(new
-            {
-                Message = "Clase creada correctamente",
-                Class = result?.Name
-            });
-        }
+        //[HttpPost("CreatePlan")]
+        //public async Task<ActionResult> CreatePlan(CreatePlanAdminRequest request)
+        //{
+        //    var result = await _AdminService.CreatePlan(request);
+        //    return Ok(new
+        //    {
+        //        Message = "Clase creada correctamente",
+        //        Class = result?.Name
+        //    });
+        //}
 
 
-        [HttpDelete("DeletePlan")]
-        public async Task<ActionResult> DeletePlan(Guid id)
-        {
-            var result = await _AdminService.DeletePlan(id);
-            if (result == null)
-                return NotFound("Plan no encontrado");
-            return Ok(result.ToPlanResponse());
-        }
+        //[HttpDelete("DeletePlan")]
+        //public async Task<ActionResult> DeletePlan(Guid id)
+        //{
+        //    var result = await _AdminService.DeletePlan(id);
+        //    if (result == null)
+        //        return NotFound("Plan no encontrado");
+        //    return Ok(result.ToPlanResponse());
+        //}
 
 
-        [HttpGet("GetPlan")]
-        public async Task<ActionResult<IEnumerable<PlanResponse>>> GetPlan()
-        {
-            var result = await _AdminService.GetPlan();
-            return Ok(result.Select(p => p.ToPlanResponse()));
-        }
-
-
-
-        //-------------------- Class controler-----------------------------
+        //[HttpGet("GetPlan")]
+        //public async Task<ActionResult<IEnumerable<PlanResponse>>> GetPlan()
+        //{
+        //    var result = await _AdminService.GetPlan();
+        //    return Ok(result.Select(p => p.ToPlanResponse()));
+        //}
 
 
 
-        [HttpPost("CreteClass")]
-        public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
-        {
-            var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
-
-            return Ok(new
-            {
-                Message = "Clase creada correctamente",
-                Class = result?.Name
-            });
-
-        }
+        ////-------------------- Class controler-----------------------------
 
 
-        [HttpGet("getClassDetail/{id}")]
-        public async Task<ActionResult> GetClassDetail(Guid id)
-        {
-            var result = await _AdminService.GetClassDetail(id);
-            return Ok(result);
-        }
+
+        ////[HttpPost("CreateClass")]
+        ////public async Task<ActionResult> CreteClass([FromBody] CreateClassWithSchedulesRequest request)
+        ////{
+        ////    var result = await _AdminService.CreteClass(request.ClassRequest, request.ScheduleRequests);
+
+        ////    return Ok(new
+        ////    {
+        ////        Message = "Clase creada correctamente",
+        ////        Class = result?.Name
+        ////    });
+
+        //}
 
 
-        [HttpPut("updateClass/{id}")]
-        public async Task<ActionResult> UpdateClass(Guid id, [FromBody] CreateClassWithSchedulesRequest request)
-        {
+        //[HttpGet("getClassDetail/{id}")]
+        //public async Task<ActionResult> GetClassDetail(Guid id)
+        //{
+        //    var result = await _AdminService.GetClassDetail(id);
+        //    return Ok(result);
+        //}
 
-            var result = await _AdminService.UpdateClass(id, request.ClassRequest, request.ScheduleRequests);
 
-            return Ok(result.Select(c => c.ToClassResponse()));
-        }
+        //[HttpPut("updateClass/{id}")]
+        //public async Task<ActionResult> UpdateClass(Guid id, [FromBody] CreateClassWithSchedulesRequest request)
+        //{
+
+        //    var result = await _AdminService.UpdateClass(id, request.ClassRequest, request.ScheduleRequests);
+
+        //    return Ok(result.Select(c => c.ToClassResponse()));
+        //}
 
 
         //-------------------- Client Inscriptions-----------------------------
