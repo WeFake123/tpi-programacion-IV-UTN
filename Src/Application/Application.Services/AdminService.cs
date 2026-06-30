@@ -66,17 +66,17 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ValidationException("Plan name is required");
 
-            if (request.value <= 0)
+            if (request.Value <= 0)
                 throw new ValidationException("Plan value must be greater than zero");
 
-            if (request.Max_Users < 0)
+            if (request.Max_Clases < 0)
                 throw new ValidationException("Max classes cannot be negative");
 
             var plan = new Plan
             {
                 Name = request.Name,
-                Max_Class = request.Max_Users,
-                Value = request.value
+                Max_Class = request.Max_Clases,
+                Value = request.Value
             };
 
 
