@@ -2,6 +2,7 @@
 {
     public class CreateScheduleRequest
     {
+
         public int DayOfWeek { get; set; }
 
         public TimeOnly StartTime { get; set; }

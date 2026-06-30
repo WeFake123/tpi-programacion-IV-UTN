@@ -13,10 +13,12 @@ namespace Presentation.Controller
     public class ScheduleController : ControllerBase
     {
         private readonly IScheduleService _service;
+        private readonly IClassService _classService;
 
-        public ScheduleController(IScheduleService service)
+        public ScheduleController(IScheduleService service, IClassService classService)
         {
             _service = service;
+            _classService = classService;
         }
 
         [AllowAnonymous]
@@ -38,11 +40,17 @@ namespace Presentation.Controller
 
         [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] CreateScheduleRequest dto)
+        public async Task<ActionResult> Post(Guid idClass,[FromBody] CreateScheduleRequest dto)
         {
-            var schedule = dto.ToSchedule();
 
-            
+            var schedule = dto.ToSchedule();
+            var existingClass = await _classService.GetById(idClass);
+            if (existingClass == null)
+            {
+                return NotFound("Class not found");
+            }
+            schedule.Id_Class = idClass;
+
             var created = await _service.Create(schedule);
             return Ok(created.ToScheduleResponse());
         }
