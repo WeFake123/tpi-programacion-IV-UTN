@@ -9,96 +9,29 @@ using Presentation.Authorization;
 namespace Presentation.Controller
 {
     [ApiController]
-    // Usamos esta ruta para que los hijos hereden la ruta base o la definan ellos
     [Route("api/[controller]")]
     public abstract class UsersController<T> : ControllerBase where T : User
     {
         protected readonly IUserService _service;
-        
 
         public UsersController(IUserService service)
         {
             _service = service;
-            _authService = authService;
         }
 
-        [AllowAnonymous]
-        [HttpPost("signin")]
-        public async Task<ActionResult<SingInResponse>> SingIn(
-            [FromBody] SingInRequest request)
-        {
-            var response = await _authService.SingIn(request);
-
-            return Ok(response);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("signup")]
-        public async Task<ActionResult<SingUpResponse>> SingUp(
-            [FromBody] SingUpRequest request)
-        {
-            var response = await _authService.SingUp(request);
-
-            return Ok(response);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("verify-email")]
-        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
-        {
-            await _authService.VerifyEmail(token);
-
-            return Ok("Email verificado correctamente.");
-        }
-
-        [AllowAnonymous]
-        [HttpPost("resend-verification")]
-        public async Task<IActionResult> ResendVerification(
-            [FromBody] ResendVerificationRequest request)
-        {
-            await _authService.ResendVerificationEmail(request.Email);
-
-            return Ok("Correo de verificacion enviado.");
-        }
-
-        [AllowAnonymous]
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(
-            [FromBody] ForgotPasswordRequest request)
-        {
-            await _authService.ForgotPassword(request.Email);
-
-            return Ok("Se envio el correo de recuperacion.");
-        }
-
-        [AllowAnonymous]
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(
-            [FromQuery] string token,
-            [FromBody] string NewPassword)
-        {
-            await _authService.ResetPassword(token, NewPassword);
-
-            return Ok("Contraseña actualizada correctamente.");
-        }
-
-        
         [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<T>>> Get()
         {
             var users = await _service.GetAll();
-            // devolver solo el tipo específico (Client, Admin, etc.)
             return Ok(users.OfType<T>());
         }
 
-        //para que el usuario pueda actualizar su perfil, sin necesidad de ser admin
         [Authorize]
         [HttpPut("me")]
         public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
         {
             var result = await _service.UpdateUser(request);
-
             return Ok(result);
         }
 
@@ -129,13 +62,11 @@ namespace Presentation.Controller
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, (T)created);
         }
 
-
         [Authorize(Policy = Policies.AdminOSysAdmin)]
         [HttpPatch("{id}")]
         public virtual async Task<IActionResult> Patch(Guid id, T user)
         {
             await _service.Update(id, user);
-
             return NoContent();
         }
 
@@ -144,7 +75,6 @@ namespace Presentation.Controller
         public virtual async Task<IActionResult> Delete(Guid id)
         {
             await _service.Delete(id);
-
             return NoContent();
         }
     }
