@@ -1,5 +1,4 @@
 ﻿using Domain.Entity;
-using Microsoft.VisualBasic;
 namespace Domain.Interface
 {
     public interface IScheduleRepository : IBaseRepository<Schedule>

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static Domain.Entity.Schedule;
-
-
-namespace Domain.Entity
+﻿namespace Domain.Entity
 {
     public class Class
     {
