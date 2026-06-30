@@ -12,6 +12,7 @@ namespace Presentation.Presentation.Controller
 {
 
     [Authorize(Policy = Policies.AdminOSysAdmin)]
+    [Route("api/[controller]")]
     public class PlanController : ControllerBase
     {
 

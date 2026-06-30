@@ -121,7 +121,7 @@ namespace Presentation.Presentation.Controller
 
 
         [Authorize(Policy = Policies.AdminOSysAdmin)]
-        [HttpPatch("{id}")]
+        [HttpPatch("UpdateUser/{id}")]
         public virtual async Task<IActionResult> Patch(Guid id, User user)
         {
             await _service.Update(id, user);

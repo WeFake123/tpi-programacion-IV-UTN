@@ -35,9 +35,13 @@ namespace Presentation.Presentation.Controller
 
         [Authorize]
         [HttpDelete("deleteUser")]
-        public async Task<ActionResult> DeleteUser([FromBody] Guid id)
+        public async Task<ActionResult> DeleteUser(Guid id)
         {
-            var userToDelete = await _service.GetById(id);
+    
+
+            await _service.Delete(id);
+
+
 
             return Ok(new
             {
