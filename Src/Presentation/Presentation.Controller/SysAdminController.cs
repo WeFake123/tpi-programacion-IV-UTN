@@ -32,6 +32,19 @@ namespace Presentation.Presentation.Controller
                 User = result.Email
             });
         }
+
+        [Authorize]
+        [HttpDelete("deleteUser")]
+        public async Task<ActionResult> DeleteUser([FromBody] Guid id)
+        {
+            var userToDelete = await _service.GetById(id);
+
+            return Ok(new
+            {
+                Message = "User deleted successfully",
+            });
+
+        }
     }
 }
 
