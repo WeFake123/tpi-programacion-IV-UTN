@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Entity
+﻿namespace Domain.Entity
 {
     public class Admin: User
     {

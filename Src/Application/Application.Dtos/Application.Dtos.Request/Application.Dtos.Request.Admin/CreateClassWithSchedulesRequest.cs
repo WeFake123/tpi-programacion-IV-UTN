@@ -1,9 +1,4 @@
-﻿using Application.Dtos.Request.Admin;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dtos.Request.Admin
+﻿namespace Application.Dtos.Request.Admin
 {
     public class CreateClassWithSchedulesRequest
     {
