@@ -42,8 +42,8 @@ namespace Presentation.Presentation.Controller
 
             return Ok();
         }
-
-        [Authorize]
+        
+        [Authorize(Policy = Policies.SoloClient)]
         [HttpPost("BuyPlan")]
         public async Task<IActionResult> CreatePayment(Guid planId)
         {
