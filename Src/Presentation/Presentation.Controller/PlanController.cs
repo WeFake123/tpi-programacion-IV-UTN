@@ -2,11 +2,9 @@
 using Application.Dtos.Responses;
 using Application.Interfaces;
 using Application.Mapper;
-using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
-using Presentation.Controller;
 
 namespace Presentation.Presentation.Controller
 {
@@ -20,15 +18,7 @@ namespace Presentation.Presentation.Controller
         {
             _AdminService = adminService;
         }
-
-        //Borrar horarios de clases
-
-        //Modificar horarios de clases
-
-        //Crear una clase con horaris deseados
-
-
-        // -------------PLAN controller --------------------
+        // -------------PLAN controller -------------------
 
 
         [HttpPut("UpdatePlan")]

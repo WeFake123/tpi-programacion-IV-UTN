@@ -1,23 +1,22 @@
 using Application.Dtos.Request;
 using Application.Interfaces;
-using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
-using Presentation.Controller;
-
 
 namespace Presentation.Presentation.Controller
 {
-
+    [ApiController]
+    [Route("api/[controller]")]
     [Authorize(Policy = Policies.SoloSysAdmin)]
-    public class SysAdminController : UsersController<SysAdmin>
+    public class SysAdminController : ControllerBase
     {
+        private readonly IUserService _service;
         private readonly ISysAdminService _sysAdminService;
-        public SysAdminController(IUserService service, ISysAdminService sysAdminService) : base(service)
+        public SysAdminController(IUserService service, ISysAdminService sysAdminService)
         {
             _sysAdminService = sysAdminService;
-
+            _service = service;
         }
 
         [Authorize]

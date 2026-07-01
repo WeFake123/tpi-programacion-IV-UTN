@@ -1,25 +1,23 @@
 ﻿using Application.Dtos.Request;
 using Application.Interfaces;
-using Domain.Entity;
 using Domain.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Authorization;
-using Presentation.Controller;
 using System.Security.Claims;
 
 namespace Presentation.Presentation.Controller
 {
-    public class ClientController : UsersController<Client>
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ClientController : ControllerBase
     {
         private readonly IPlanRepository _planRepo;
         private readonly IMercadoPagoService _mercadoPagoService;
-
-        public ClientController(
-            IUserService service,
-            IMercadoPagoService mercadoPagoService,
-            IPlanRepository planRepo) : base(service)
+        private readonly IUserService _service;
+        public ClientController(IUserService service, IMercadoPagoService mercadoPagoService, IPlanRepository planRepo)
         {
+            _service = service;
             _planRepo = planRepo;
             _mercadoPagoService = mercadoPagoService;
         }
